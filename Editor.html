@@ -1,0 +1,3565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CEWCMM — by MONTOO</title>
+<style>
+/* ══════════════════════════════════════════════════
+   CEWCMM — Full VS Code Clone · by MONTOO
+   ══════════════════════════════════════════════════ */
+@import url('https://fonts.googleapis.com/css2?family=Consolas&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box;user-select:none;}
+textarea,input{user-select:text;}
+
+:root{
+  --titlebar:#3c3c3c;
+  --menubar:#3c3c3c;
+  --actbar:#333333;
+  --sidebar:#252526;
+  --sidebar-border:#1e1e1e;
+  --sidebar-hover:#2a2d2e;
+  --sidebar-active:#094771;
+  --sidebar-text:#cccccc;
+  --sidebar-muted:#858585;
+  --editor-bg:#1e1e1e;
+  --editor-fg:#d4d4d4;
+  --editor-line:#2a2d2e;
+  --editor-sel:#264f78;
+  --editor-word:#575757;
+  --tab-bar:#252526;
+  --tab-active:#1e1e1e;
+  --tab-inactive:#2d2d2d;
+  --tab-border:#007acc;
+  --panel-bg:#1e1e1e;
+  --panel-header:#252526;
+  --statusbar:#007acc;
+  --statusbar-fg:#fff;
+  --line-num:#858585;
+  --line-num-active:#c6c6c6;
+  --minimap-bg:#252526;
+  --scrollbar:#424242;
+  --border:#1e1e1e;
+  --input-bg:#3c3c3c;
+  --input-border:#555;
+  --btn-bg:#0e639c;
+  --btn-hover:#1177bb;
+  --dropdown-bg:#252526;
+  --dropdown-border:#454545;
+  --hover-bg:rgba(255,255,255,0.07);
+  --focus:#007acc;
+
+  /* Syntax — Dark+ */
+  --s-kw:#569cd6;
+  --s-str:#ce9178;
+  --s-cmt:#6a9955;
+  --s-num:#b5cea8;
+  --s-fn:#dcdcaa;
+  --s-cls:#4ec9b0;
+  --s-prop:#9cdcfe;
+  --s-op:#d4d4d4;
+  --s-tag:#569cd6;
+  --s-attr:#9cdcfe;
+  --s-val:#ce9178;
+  --s-bool:#569cd6;
+  --s-rx:#d16969;
+  --s-dec:#4fc1ff;
+  --s-type:#4ec9b0;
+
+  --font-size:13px;
+  --line-height:19px;
+  --tab-size:4;
+}
+
+/* Light theme */
+body.light{
+  --titlebar:#dddddd;
+  --menubar:#dddddd;
+  --actbar:#2c2c2c;
+  --sidebar:#f3f3f3;
+  --sidebar-border:#e5e5e5;
+  --sidebar-hover:#e8e8e8;
+  --sidebar-active:#cce5ff;
+  --sidebar-text:#333333;
+  --sidebar-muted:#888888;
+  --editor-bg:#ffffff;
+  --editor-fg:#000000;
+  --editor-line:#f5f5f5;
+  --editor-sel:#add6ff;
+  --tab-bar:#ececec;
+  --tab-active:#ffffff;
+  --tab-inactive:#ececec;
+  --tab-border:#005fb8;
+  --panel-bg:#f3f3f3;
+  --panel-header:#ececec;
+  --line-num:#999999;
+  --line-num-active:#333333;
+  --minimap-bg:#f3f3f3;
+  --scrollbar:#c1c1c1;
+  --border:#e5e5e5;
+  --input-bg:#ffffff;
+  --input-border:#ccc;
+  --dropdown-bg:#ffffff;
+  --dropdown-border:#ccc;
+  --hover-bg:rgba(0,0,0,0.06);
+  --s-kw:#0000ff;
+  --s-str:#a31515;
+  --s-cmt:#008000;
+  --s-num:#098658;
+  --s-fn:#795e26;
+  --s-cls:#267f99;
+  --s-prop:#001080;
+  --s-tag:#800000;
+  --s-attr:#e50000;
+  --s-val:#a31515;
+  --s-bool:#0000ff;
+}
+
+html,body{height:100%;overflow:hidden;font-family:'Segoe UI',system-ui,sans-serif;font-size:13px;}
+body{display:flex;flex-direction:column;background:var(--editor-bg);color:var(--editor-fg);}
+
+/* ── TITLE BAR ── */
+.titlebar{
+  height:30px;background:var(--titlebar);
+  display:flex;align-items:center;
+  flex-shrink:0;position:relative;
+  border-bottom:1px solid rgba(0,0,0,0.3);
+  -webkit-app-region:drag;
+}
+.tdots{display:flex;gap:6px;padding:0 12px;-webkit-app-region:no-drag;}
+.tdot{width:12px;height:12px;border-radius:50%;cursor:pointer;transition:filter .15s;}
+.tdot:hover{filter:brightness(1.3);}
+.tdot-r{background:#ff5f57;}
+.tdot-y{background:#ffbd2e;}
+.tdot-g{background:#28c840;}
+.tmenus{display:flex;-webkit-app-region:no-drag;}
+.tmenu{
+  font-size:12px;color:rgba(255,255,255,0.75);
+  padding:0 8px;height:30px;line-height:30px;
+  cursor:pointer;white-space:nowrap;transition:background .1s;
+}
+body.light .tmenu{color:rgba(0,0,0,0.7);}
+.tmenu:hover,.tmenu.open{background:var(--hover-bg);}
+.ttitle{
+  position:absolute;left:50%;transform:translateX(-50%);
+  font-size:12px;color:rgba(255,255,255,0.7);pointer-events:none;white-space:nowrap;
+}
+body.light .ttitle{color:rgba(0,0,0,0.6);}
+.tcontrols{margin-left:auto;display:flex;-webkit-app-region:no-drag;}
+.tctrl{
+  width:46px;height:30px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:rgba(255,255,255,0.7);font-size:12px;transition:background .1s;
+}
+body.light .tctrl{color:rgba(0,0,0,0.7);}
+.tctrl:hover{background:rgba(255,255,255,0.1);}
+.tctrl.cl:hover{background:#e81123;color:#fff;}
+
+/* ── DROPDOWN MENUS ── */
+.dropdown{
+  position:fixed;background:var(--dropdown-bg);
+  border:1px solid var(--dropdown-border);
+  border-radius:4px;min-width:220px;
+  padding:4px 0;z-index:9999;
+  box-shadow:0 8px 24px rgba(0,0,0,0.4);
+  display:none;
+}
+.dropdown.show{display:block;}
+.dd-item{
+  padding:5px 24px 5px 12px;font-size:12px;
+  cursor:pointer;color:var(--sidebar-text);
+  display:flex;align-items:center;justify-content:space-between;
+  white-space:nowrap;transition:background .07s;
+}
+.dd-item:hover{background:var(--sidebar-active);color:#fff;}
+.dd-item.disabled{color:var(--sidebar-muted);cursor:default;}
+.dd-item.disabled:hover{background:none;color:var(--sidebar-muted);}
+.dd-sep{height:1px;background:var(--dropdown-border);margin:4px 0;}
+.dd-key{font-size:11px;color:var(--sidebar-muted);margin-left:16px;}
+.dd-item:hover .dd-key{color:rgba(255,255,255,0.6);}
+.dd-arrow{color:var(--sidebar-muted);margin-left:8px;}
+
+/* ── APP BODY ── */
+.appbody{display:flex;flex:1;overflow:hidden;}
+
+/* ── ACTIVITY BAR ── */
+.actbar{
+  width:48px;background:var(--actbar);
+  display:flex;flex-direction:column;align-items:center;
+  padding-top:0;flex-shrink:0;
+  border-right:1px solid var(--border);
+}
+.ab-item{
+  width:48px;height:48px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;position:relative;
+  color:rgba(255,255,255,0.4);transition:color .12s;
+}
+.ab-item:hover{color:rgba(255,255,255,0.9);}
+.ab-item.active{color:#ffffff;}
+.ab-item.active::before{
+  content:'';position:absolute;left:0;top:10px;bottom:10px;
+  width:2px;background:#fff;border-radius:0 2px 2px 0;
+}
+.ab-icon{font-size:20px;line-height:1;}
+.ab-badge{
+  position:absolute;top:7px;right:7px;
+  background:#007acc;color:#fff;
+  font-size:9px;font-weight:700;
+  min-width:14px;height:14px;
+  border-radius:7px;padding:0 3px;
+  display:flex;align-items:center;justify-content:center;
+}
+.ab-bottom{margin-top:auto;margin-bottom:4px;}
+.ab-tooltip{
+  position:absolute;left:52px;
+  background:rgba(80,80,80,0.95);color:#fff;
+  font-size:12px;padding:4px 8px;border-radius:3px;
+  white-space:nowrap;pointer-events:none;display:none;z-index:100;
+}
+.ab-item:hover .ab-tooltip{display:block;}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  width:260px;background:var(--sidebar);
+  display:flex;flex-direction:column;
+  border-right:1px solid var(--sidebar-border);
+  flex-shrink:0;overflow:hidden;transition:width .15s;
+}
+.sidebar.collapsed{width:0;}
+.sb-title{
+  height:35px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 12px;font-size:11px;font-weight:600;
+  letter-spacing:1.2px;text-transform:uppercase;
+  color:var(--sidebar-text);flex-shrink:0;
+}
+.sb-actions{display:flex;gap:2px;}
+.sb-btn{
+  width:22px;height:22px;border-radius:4px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:var(--sidebar-muted);font-size:14px;
+  transition:all .1s;
+}
+.sb-btn:hover{background:var(--hover-bg);color:var(--sidebar-text);}
+
+/* File tree */
+.file-tree{flex:1;overflow-y:auto;overflow-x:hidden;}
+.file-tree::-webkit-scrollbar{width:6px;}
+.file-tree::-webkit-scrollbar-thumb{background:var(--scrollbar);border-radius:2px;}
+.tree-row{
+  height:22px;display:flex;align-items:center;
+  cursor:pointer;padding-right:8px;font-size:13px;
+  color:var(--sidebar-text);position:relative;transition:background .05s;
+}
+.tree-row:hover{background:var(--sidebar-hover);}
+.tree-row.selected{background:var(--sidebar-active);}
+.tree-row.selected::before{content:'';position:absolute;left:0;top:0;bottom:0;width:1px;background:#007acc;}
+.tree-row.cut{opacity:0.5;}
+.tree-indent{flex-shrink:0;}
+.tree-arrow{width:16px;flex-shrink:0;font-size:9px;color:var(--sidebar-muted);display:flex;align-items:center;justify-content:center;}
+.tree-icon{width:18px;flex-shrink:0;font-size:14px;}
+.tree-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;}
+.tree-row.renaming .tree-name{display:none;}
+.rename-input{
+  flex:1;background:var(--input-bg);border:1px solid #007acc;
+  color:var(--sidebar-text);font-size:13px;padding:0 4px;outline:none;height:18px;
+}
+
+/* ── SEARCH SIDEBAR ── */
+.search-sb{padding:8px;display:flex;flex-direction:column;gap:6px;flex:1;overflow:hidden;}
+.search-row{display:flex;gap:4px;align-items:center;}
+.sb-input{
+  flex:1;background:var(--input-bg);border:1px solid var(--input-border);
+  color:var(--sidebar-text);font-size:12px;padding:4px 8px;outline:none;border-radius:2px;
+  font-family:inherit;
+}
+.sb-input:focus{border-color:#007acc;}
+.sb-toggle{
+  width:24px;height:24px;border-radius:3px;background:none;border:1px solid transparent;
+  color:var(--sidebar-muted);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;
+  transition:all .1s;
+}
+.sb-toggle:hover{background:var(--hover-bg);color:var(--sidebar-text);}
+.sb-toggle.on{background:var(--sidebar-active);color:#fff;border-color:#007acc;}
+.search-results{flex:1;overflow-y:auto;font-size:12px;}
+.search-results::-webkit-scrollbar{width:4px;}
+.search-results::-webkit-scrollbar-thumb{background:var(--scrollbar);}
+.sr-file{padding:4px 8px;color:var(--sidebar-text);font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px;}
+.sr-file:hover{background:var(--sidebar-hover);}
+.sr-match{
+  padding:2px 8px 2px 28px;color:var(--sidebar-muted);cursor:pointer;
+  display:flex;gap:4px;align-items:flex-start;
+}
+.sr-match:hover{background:var(--sidebar-hover);color:var(--sidebar-text);}
+.sr-line-num{color:#858585;flex-shrink:0;min-width:28px;text-align:right;}
+.sr-text{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.sr-hl{background:rgba(255,200,0,0.3);border-radius:2px;}
+.sr-count{font-size:11px;color:var(--sidebar-muted);padding:4px 8px;}
+
+/* ── GIT SIDEBAR ── */
+.git-sb{padding:8px;display:flex;flex-direction:column;gap:8px;flex:1;overflow-y:auto;}
+.git-commit-area{display:flex;flex-direction:column;gap:6px;}
+.git-msg{
+  width:100%;background:var(--input-bg);border:1px solid var(--input-border);
+  color:var(--sidebar-text);font-size:12px;padding:6px 8px;outline:none;border-radius:2px;
+  resize:vertical;min-height:60px;font-family:inherit;
+}
+.git-msg:focus{border-color:#007acc;}
+.git-commit-btn{
+  background:var(--btn-bg);color:#fff;border:none;padding:5px 10px;
+  border-radius:2px;cursor:pointer;font-size:12px;font-weight:600;
+  transition:background .1s;
+}
+.git-commit-btn:hover{background:var(--btn-hover);}
+.git-section{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--sidebar-muted);padding:4px 0;}
+.git-file{
+  display:flex;align-items:center;gap:6px;padding:3px 4px;
+  border-radius:3px;cursor:pointer;transition:background .07s;
+  color:var(--sidebar-text);font-size:12px;
+}
+.git-file:hover{background:var(--sidebar-hover);}
+.git-status{width:14px;font-weight:700;font-size:11px;flex-shrink:0;}
+.git-status.M{color:#cca700;}
+.git-status.U{color:#89d185;}
+.git-status.D{color:#f48771;}
+.git-status.A{color:#89d185;}
+.git-actions{margin-left:auto;display:flex;gap:2px;opacity:0;transition:opacity .1s;}
+.git-file:hover .git-actions{opacity:1;}
+.git-act-btn{
+  width:18px;height:18px;border-radius:2px;background:none;border:none;
+  color:var(--sidebar-muted);cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;
+}
+.git-act-btn:hover{background:var(--hover-bg);color:var(--sidebar-text);}
+
+/* ── EXTENSIONS SIDEBAR ── */
+.ext-list{flex:1;overflow-y:auto;}
+.ext-item{
+  padding:10px 12px;display:flex;gap:10px;cursor:pointer;
+  border-bottom:1px solid var(--border);transition:background .07s;
+}
+.ext-item:hover{background:var(--sidebar-hover);}
+.ext-icon{width:40px;height:40px;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px;}
+.ext-info{flex:1;min-width:0;}
+.ext-name{font-size:13px;font-weight:600;color:var(--sidebar-text);}
+.ext-desc{font-size:11px;color:var(--sidebar-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;}
+.ext-meta{display:flex;gap:6px;margin-top:4px;align-items:center;}
+.ext-pub{font-size:11px;color:var(--sidebar-muted);}
+.ext-stars{font-size:11px;color:#cca700;}
+.ext-install-btn{
+  padding:3px 10px;border-radius:2px;background:var(--btn-bg);color:#fff;
+  border:none;cursor:pointer;font-size:11px;font-weight:600;white-space:nowrap;
+  transition:background .1s;
+}
+.ext-install-btn:hover{background:var(--btn-hover);}
+.ext-install-btn.installed{background:none;border:1px solid var(--input-border);color:var(--sidebar-text);}
+
+/* ── EDITOR ZONE ── */
+.edzone{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
+
+/* ── TABS ── */
+.tabs-bar{
+  height:35px;background:var(--tab-bar);
+  display:flex;align-items:flex-end;
+  border-bottom:1px solid var(--border);
+  overflow-x:auto;flex-shrink:0;
+}
+.tabs-bar::-webkit-scrollbar{height:2px;}
+.tabs-bar::-webkit-scrollbar-thumb{background:var(--scrollbar);}
+.tab{
+  height:35px;display:flex;align-items:center;gap:6px;
+  padding:0 10px;cursor:pointer;border-right:1px solid var(--border);
+  white-space:nowrap;flex-shrink:0;position:relative;
+  background:var(--tab-inactive);color:rgba(255,255,255,0.45);
+  transition:color .1s,background .1s;font-size:13px;
+  min-width:80px;max-width:180px;
+}
+body.light .tab{color:rgba(0,0,0,0.4);}
+.tab.active{background:var(--tab-active);color:var(--editor-fg);}
+.tab.active::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:var(--tab-border);}
+.tab:hover:not(.active){background:var(--sidebar-hover);color:var(--editor-fg);}
+.tab-icon{font-size:13px;flex-shrink:0;}
+.tab-name{flex:1;overflow:hidden;text-overflow:ellipsis;font-size:13px;}
+.tab-dirty{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.5);flex-shrink:0;}
+.tab.active .tab-dirty{background:var(--editor-fg);}
+.tab-x{
+  width:18px;height:18px;border-radius:3px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;color:var(--sidebar-muted);transition:all .1s;
+}
+.tab:hover .tab-x{color:var(--editor-fg);}
+.tab-x:hover{background:rgba(255,255,255,0.15)!important;}
+.tab-add{
+  width:30px;height:35px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:var(--sidebar-muted);font-size:18px;flex-shrink:0;
+}
+.tab-add:hover{color:var(--editor-fg);}
+
+/* ── BREADCRUMB ── */
+.breadcrumb{
+  height:22px;background:var(--editor-bg);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 14px;gap:2px;
+  font-size:12px;color:var(--sidebar-muted);flex-shrink:0;overflow:hidden;
+}
+.bc-item{cursor:pointer;padding:0 2px;border-radius:2px;transition:background .1s;}
+.bc-item:hover{background:var(--hover-bg);color:var(--editor-fg);}
+.bc-sep{color:rgba(255,255,255,0.2);}
+body.light .bc-sep{color:rgba(0,0,0,0.2);}
+.bc-last{color:var(--editor-fg);}
+
+/* ── EDITOR SPLIT ── */
+.split-v{display:flex;flex-direction:column;flex:1;overflow:hidden;}
+.editor-group{flex:1;display:flex;overflow:hidden;}
+
+/* ── EDITOR PANE ── */
+.editor-pane{flex:1;display:flex;overflow:hidden;position:relative;}
+.gutter{
+  width:60px;background:var(--editor-bg);flex-shrink:0;
+  overflow:hidden;border-right:1px solid transparent;
+  display:flex;flex-direction:column;
+}
+.gutter-nums{
+  padding:0 10px 0 4px;
+  font-family:'Consolas','Courier New',monospace;
+  font-size:var(--font-size);line-height:var(--line-height);
+  color:var(--line-num);text-align:right;white-space:pre;
+  padding-top:10px;
+}
+.code-wrap{flex:1;overflow:auto;position:relative;}
+.code-wrap::-webkit-scrollbar{width:10px;height:10px;}
+.code-wrap::-webkit-scrollbar-track{background:var(--editor-bg);}
+.code-wrap::-webkit-scrollbar-thumb{background:var(--scrollbar);border-radius:2px;}
+.code-wrap::-webkit-scrollbar-corner{background:var(--editor-bg);}
+.code-editor{
+  min-height:100%;min-width:100%;width:max-content;
+  padding:10px 0;font-family:'Consolas','Courier New',monospace;
+  font-size:var(--font-size);line-height:var(--line-height);
+  color:var(--editor-fg);background:transparent;
+  border:none;resize:none;outline:none;tab-size:4;
+  caret-color:#aeafad;white-space:pre;overflow:hidden;
+}
+.code-editor.wrap{white-space:pre-wrap;width:100%;}
+
+/* ── MINIMAP ── */
+.minimap{
+  width:80px;background:var(--minimap-bg);
+  border-left:1px solid var(--border);flex-shrink:0;
+  overflow:hidden;position:relative;cursor:pointer;
+}
+.mm-viewport{
+  position:absolute;left:0;right:0;
+  background:rgba(255,255,255,0.08);
+  pointer-events:none;min-height:20px;
+}
+.mm-code{
+  padding:4px;font-size:2px;line-height:3px;
+  font-family:monospace;white-space:pre;
+  overflow:hidden;pointer-events:none;
+  color:var(--editor-fg);opacity:0.4;
+  transform-origin:top left;
+}
+
+/* ── PANEL ── */
+.panel{
+  background:var(--panel-bg);flex-shrink:0;
+  border-top:1px solid var(--border);
+  display:flex;flex-direction:column;
+  min-height:28px;
+}
+.panel.closed{height:28px!important;}
+.panel-header{
+  height:28px;background:var(--panel-header);
+  display:flex;align-items:center;
+  border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+.panel-tabs-wrap{display:flex;align-items:flex-end;flex:1;padding-left:8px;height:100%;}
+.ptab{
+  height:28px;display:flex;align-items:center;
+  padding:0 12px;font-size:11px;font-weight:600;
+  letter-spacing:0.5px;text-transform:uppercase;
+  color:var(--sidebar-muted);cursor:pointer;
+  border-bottom:1px solid transparent;transition:all .1s;
+}
+.ptab:hover{color:var(--editor-fg);}
+.ptab.active{color:var(--editor-fg);border-bottom-color:var(--editor-fg);}
+.panel-acts{display:flex;align-items:center;gap:2px;padding:0 8px;margin-left:auto;}
+.panel-act{
+  width:22px;height:22px;border-radius:4px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:var(--sidebar-muted);font-size:13px;transition:all .1s;
+}
+.panel-act:hover{background:var(--hover-bg);color:var(--editor-fg);}
+.panel-body{flex:1;overflow:hidden;display:flex;flex-direction:column;}
+.panel-content{
+  flex:1;overflow-y:auto;overflow-x:auto;
+  padding:4px 0;
+}
+.panel-content::-webkit-scrollbar{width:6px;height:6px;}
+.panel-content::-webkit-scrollbar-thumb{background:var(--scrollbar);border-radius:2px;}
+
+/* Terminal */
+.terminal{
+  flex:1;overflow-y:auto;overflow-x:hidden;
+  padding:4px 12px;
+  font-family:'Consolas','Courier New',monospace;
+  font-size:13px;line-height:1.5;color:#cccccc;
+}
+.terminal::-webkit-scrollbar{width:6px;}
+.terminal::-webkit-scrollbar-thumb{background:var(--scrollbar);}
+.term-line{white-space:pre-wrap;word-break:break-all;margin:1px 0;}
+.term-prompt{color:#4ec9b0;}
+.term-ok{color:#89d185;}
+.term-err{color:#f48771;}
+.term-warn{color:#cca700;}
+.term-info{color:#569cd6;}
+.term-dim{color:#858585;}
+.term-bold{font-weight:700;}
+.term-input-row{display:flex;align-items:center;gap:4px;padding:2px 0;}
+.term-input{
+  flex:1;background:transparent;border:none;outline:none;
+  color:#cccccc;font-family:'Consolas','Courier New',monospace;
+  font-size:13px;caret-color:#aeafad;
+}
+.term-tabs{display:flex;gap:0;align-items:center;padding:0 4px;border-bottom:1px solid var(--border);}
+.term-tab{
+  padding:3px 10px;font-size:12px;color:var(--sidebar-muted);
+  cursor:pointer;border-radius:3px 3px 0 0;transition:all .1s;
+}
+.term-tab:hover{color:var(--editor-fg);}
+.term-tab.active{background:var(--panel-bg);color:var(--editor-fg);}
+.term-tab-add{padding:3px 8px;color:var(--sidebar-muted);cursor:pointer;font-size:14px;}
+.term-tab-add:hover{color:var(--editor-fg);}
+.term-split-btn{padding:3px 8px;color:var(--sidebar-muted);cursor:pointer;margin-left:auto;font-size:12px;}
+.term-split-btn:hover{color:var(--editor-fg);}
+
+/* Problems */
+.problem-item{
+  display:flex;align-items:flex-start;gap:6px;
+  padding:4px 12px;font-size:12px;cursor:pointer;transition:background .07s;
+}
+.problem-item:hover{background:var(--sidebar-hover);}
+.problem-icon{flex-shrink:0;margin-top:1px;}
+.problem-file{color:var(--editor-fg);font-weight:600;}
+.problem-msg{color:var(--sidebar-text);}
+.problem-loc{color:var(--sidebar-muted);}
+
+/* ── STATUS BAR ── */
+.statusbar{
+  height:22px;background:var(--statusbar);
+  display:flex;align-items:center;flex-shrink:0;overflow:hidden;
+}
+.sb-item{
+  height:100%;display:flex;align-items:center;
+  padding:0 8px;gap:4px;cursor:pointer;
+  color:var(--statusbar-fg);font-size:12px;
+  white-space:nowrap;transition:background .1s;
+}
+.sb-item:hover{background:rgba(255,255,255,0.15);}
+.sb-item.err{background:rgba(255,0,0,0.3);}
+.sb-right{margin-left:auto;display:flex;}
+.sb-spinner{animation:spin .8s linear infinite;display:inline-block;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── COMMAND PALETTE ── */
+.overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.5);
+  z-index:8000;display:none;
+}
+.overlay.show{display:block;}
+.palette{
+  position:fixed;top:50px;left:50%;transform:translateX(-50%);
+  width:600px;max-width:95vw;background:var(--dropdown-bg);
+  border:1px solid var(--dropdown-border);border-radius:6px;
+  box-shadow:0 12px 40px rgba(0,0,0,0.6);z-index:8001;
+  display:none;overflow:hidden;
+}
+.palette.show{display:block;}
+.palette-input{
+  width:100%;background:transparent;border:none;outline:none;
+  color:var(--editor-fg);font-size:14px;padding:12px 16px;
+  font-family:inherit;border-bottom:1px solid var(--dropdown-border);
+}
+.palette-list{max-height:320px;overflow-y:auto;}
+.palette-list::-webkit-scrollbar{width:4px;}
+.palette-list::-webkit-scrollbar-thumb{background:var(--scrollbar);}
+.pal-item{
+  padding:8px 16px;cursor:pointer;display:flex;
+  align-items:center;justify-content:space-between;
+  transition:background .07s;
+}
+.pal-item:hover,.pal-item.focused{background:var(--sidebar-active);}
+.pal-item:hover .pal-key,.pal-item.focused .pal-key{color:rgba(255,255,255,0.7);}
+.pal-name{color:var(--editor-fg);font-size:13px;}
+.pal-desc{font-size:11px;color:var(--sidebar-muted);margin-top:2px;}
+.pal-key{font-size:11px;color:var(--sidebar-muted);}
+.pal-group{
+  padding:4px 16px;font-size:10px;font-weight:700;
+  letter-spacing:1.2px;text-transform:uppercase;
+  color:var(--sidebar-muted);background:rgba(0,0,0,0.15);
+}
+
+/* ── FIND/REPLACE ── */
+.find-widget{
+  position:absolute;top:8px;right:20px;
+  background:var(--panel-header);
+  border:1px solid var(--dropdown-border);
+  border-radius:4px;padding:6px 8px;
+  box-shadow:0 4px 16px rgba(0,0,0,0.4);
+  display:none;z-index:100;min-width:340px;
+}
+.find-widget.show{display:block;}
+.find-row{display:flex;align-items:center;gap:4px;margin-bottom:4px;}
+.find-row:last-child{margin-bottom:0;}
+.find-inp{
+  flex:1;background:var(--input-bg);border:1px solid var(--input-border);
+  color:var(--editor-fg);font-size:13px;padding:3px 8px;outline:none;border-radius:2px;
+  font-family:'Consolas',monospace;
+}
+.find-inp:focus{border-color:#007acc;}
+.find-toggle{
+  width:22px;height:22px;border-radius:3px;background:none;border:1px solid transparent;
+  color:var(--sidebar-muted);cursor:pointer;font-size:11px;
+  display:flex;align-items:center;justify-content:center;transition:all .1s;
+}
+.find-toggle:hover{background:var(--hover-bg);color:var(--editor-fg);}
+.find-toggle.on{background:var(--sidebar-active);color:#fff;border-color:#007acc;}
+.find-count{font-size:12px;color:var(--sidebar-muted);white-space:nowrap;padding:0 6px;}
+.find-btn{
+  width:22px;height:22px;border-radius:3px;background:none;border:none;
+  color:var(--sidebar-muted);cursor:pointer;font-size:14px;
+  display:flex;align-items:center;justify-content:center;transition:all .1s;
+}
+.find-btn:hover{background:var(--hover-bg);color:var(--editor-fg);}
+.find-replace-btn{
+  padding:2px 10px;background:var(--btn-bg);color:#fff;
+  border:none;border-radius:2px;cursor:pointer;font-size:12px;transition:background .1s;
+}
+.find-replace-btn:hover{background:var(--btn-hover);}
+.find-close{cursor:pointer;color:var(--sidebar-muted);font-size:16px;padding:2px 4px;}
+.find-close:hover{color:var(--editor-fg);}
+
+/* ── GOTO LINE ── */
+.goto-widget{
+  position:fixed;top:50px;left:50%;transform:translateX(-50%);
+  background:var(--dropdown-bg);border:1px solid var(--dropdown-border);
+  border-radius:4px;padding:8px;z-index:8001;display:none;min-width:280px;
+  box-shadow:0 8px 24px rgba(0,0,0,0.4);
+}
+.goto-widget.show{display:block;}
+.goto-inp{
+  width:100%;background:var(--input-bg);border:1px solid var(--input-border);
+  color:var(--editor-fg);font-size:13px;padding:6px 10px;outline:none;border-radius:2px;
+  font-family:inherit;
+}
+.goto-inp:focus{border-color:#007acc;}
+
+/* ── SETTINGS ── */
+.settings-panel{
+  flex:1;display:flex;overflow:hidden;background:var(--editor-bg);
+}
+.settings-nav{
+  width:200px;border-right:1px solid var(--border);overflow-y:auto;
+  padding:8px 0;flex-shrink:0;
+}
+.sn-item{
+  padding:6px 16px;cursor:pointer;font-size:13px;color:var(--sidebar-text);
+  transition:background .07s;
+}
+.sn-item:hover{background:var(--sidebar-hover);}
+.sn-item.active{background:var(--sidebar-active);color:#fff;}
+.sn-group{padding:8px 16px 4px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--sidebar-muted);}
+.settings-content{flex:1;overflow-y:auto;padding:16px 24px;}
+.settings-content::-webkit-scrollbar{width:6px;}
+.settings-content::-webkit-scrollbar-thumb{background:var(--scrollbar);}
+.setting-group-title{font-size:14px;font-weight:600;color:var(--editor-fg);margin:16px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--border);}
+.setting-item{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04);gap:16px;
+}
+body.light .setting-item{border-bottom-color:rgba(0,0,0,0.06);}
+.setting-info{flex:1;min-width:0;}
+.setting-name{font-size:13px;font-weight:600;color:var(--editor-fg);margin-bottom:4px;}
+.setting-desc{font-size:12px;color:var(--sidebar-muted);line-height:1.5;}
+.setting-ctrl{flex-shrink:0;}
+.setting-input{
+  background:var(--input-bg);border:1px solid var(--input-border);
+  color:var(--editor-fg);font-size:13px;padding:4px 8px;outline:none;border-radius:2px;
+  min-width:120px;font-family:inherit;
+}
+.setting-input:focus{border-color:#007acc;}
+.setting-select{
+  background:var(--input-bg);border:1px solid var(--input-border);
+  color:var(--editor-fg);font-size:13px;padding:4px 8px;outline:none;border-radius:2px;
+  cursor:pointer;font-family:inherit;
+}
+.toggle-switch{
+  width:40px;height:20px;background:var(--scrollbar);border-radius:10px;
+  cursor:pointer;position:relative;transition:background .2s;flex-shrink:0;
+}
+.toggle-switch.on{background:#007acc;}
+.toggle-switch::after{
+  content:'';position:absolute;width:16px;height:16px;
+  background:#fff;border-radius:50%;top:2px;left:2px;
+  transition:transform .2s;
+}
+.toggle-switch.on::after{transform:translateX(20px);}
+
+/* ── NOTIFICATIONS ── */
+.notif-stack{position:fixed;bottom:28px;right:12px;display:flex;flex-direction:column-reverse;gap:4px;z-index:9000;}
+.notif{
+  background:var(--panel-header);border:1px solid var(--dropdown-border);
+  border-radius:4px;padding:10px 14px;max-width:360px;
+  box-shadow:0 4px 16px rgba(0,0,0,0.4);
+  display:flex;align-items:flex-start;gap:10px;
+  animation:slideIn .2s ease;
+}
+@keyframes slideIn{from{opacity:0;transform:translateX(20px);}to{opacity:1;transform:none;}}
+.notif-icon{font-size:16px;flex-shrink:0;margin-top:1px;}
+.notif-body{flex:1;}
+.notif-title{font-size:13px;font-weight:600;color:var(--editor-fg);margin-bottom:2px;}
+.notif-msg{font-size:12px;color:var(--sidebar-muted);}
+.notif-close{cursor:pointer;color:var(--sidebar-muted);font-size:16px;line-height:1;padding:2px;}
+.notif-close:hover{color:var(--editor-fg);}
+.notif-btns{display:flex;gap:6px;margin-top:8px;}
+.notif-btn{
+  padding:3px 10px;border-radius:2px;font-size:12px;cursor:pointer;
+  background:var(--btn-bg);color:#fff;border:none;transition:background .1s;
+}
+.notif-btn:hover{background:var(--btn-hover);}
+.notif-btn.sec{background:none;border:1px solid var(--input-border);color:var(--editor-fg);}
+.notif-btn.sec:hover{background:var(--hover-bg);}
+
+/* ── CONTEXT MENU ── */
+.ctx{
+  position:fixed;background:var(--dropdown-bg);
+  border:1px solid var(--dropdown-border);border-radius:4px;
+  padding:4px 0;min-width:200px;z-index:9999;
+  box-shadow:0 8px 24px rgba(0,0,0,0.5);display:none;
+}
+.ctx.show{display:block;}
+.ctx-item{
+  padding:5px 20px 5px 12px;font-size:12px;
+  cursor:pointer;color:var(--sidebar-text);
+  display:flex;align-items:center;justify-content:space-between;
+  gap:8px;transition:background .06s;
+}
+.ctx-item:hover{background:var(--sidebar-active);color:#fff;}
+.ctx-item.disabled{color:var(--sidebar-muted);cursor:default;}
+.ctx-item.disabled:hover{background:none;color:var(--sidebar-muted);}
+.ctx-icon{width:16px;text-align:center;flex-shrink:0;}
+.ctx-key{font-size:11px;color:var(--sidebar-muted);margin-left:auto;}
+.ctx-item:hover .ctx-key{color:rgba(255,255,255,0.6);}
+.ctx-sep{height:1px;background:var(--dropdown-border);margin:4px 0;}
+
+/* ── DIFF VIEW ── */
+.diff-view{display:flex;flex:1;overflow:hidden;font-family:'Consolas','Courier New',monospace;font-size:13px;}
+.diff-side{flex:1;overflow:auto;padding:10px;}
+.diff-side::-webkit-scrollbar{width:6px;}
+.diff-side::-webkit-scrollbar-thumb{background:var(--scrollbar);}
+.diff-line{line-height:19px;white-space:pre;padding:0 8px;min-width:max-content;}
+.diff-line.add{background:rgba(0,200,100,0.1);color:#89d185;}
+.diff-line.del{background:rgba(255,100,100,0.1);color:#f48771;text-decoration:line-through;}
+.diff-line.ctx{color:var(--sidebar-muted);}
+.diff-header{height:28px;display:flex;align-items:center;padding:0 12px;font-size:12px;font-weight:600;color:var(--sidebar-muted);background:var(--panel-header);border-bottom:1px solid var(--border);flex-shrink:0;}
+
+/* ── SPLASH ── */
+.splash{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:8px;color:var(--sidebar-muted);
+}
+.splash-logo{font-size:64px;line-height:1;opacity:0.3;}
+.splash-name{font-size:24px;font-weight:300;letter-spacing:4px;color:var(--sidebar-muted);}
+.splash-sub{font-size:13px;color:var(--sidebar-muted);opacity:0.6;}
+.splash-links{display:flex;gap:16px;margin-top:20px;}
+.splash-link{
+  font-size:13px;color:#007acc;cursor:pointer;
+  text-decoration:underline;text-underline-offset:3px;
+}
+.splash-link:hover{color:#1a8ad4;}
+.recent-list{margin-top:8px;text-align:left;min-width:300px;}
+.recent-item{
+  display:flex;align-items:center;gap:8px;padding:4px 0;
+  cursor:pointer;font-size:13px;color:var(--editor-fg);
+}
+.recent-item:hover{color:#007acc;}
+
+/* ── RESIZE HANDLE ── */
+.resize-h{
+  height:4px;background:transparent;cursor:ns-resize;flex-shrink:0;
+  border-top:1px solid var(--border);transition:background .15s;
+}
+.resize-h:hover{background:rgba(0,122,204,0.5);}
+.resize-v{
+  width:4px;background:transparent;cursor:ew-resize;flex-shrink:0;
+  border-left:1px solid var(--border);transition:background .15s;
+}
+.resize-v:hover{background:rgba(0,122,204,0.5);}
+
+/* ── INLAY HINTS ── */
+.inlay{display:inline;font-size:11px;opacity:0.6;background:rgba(255,255,255,0.07);border-radius:2px;padding:1px 3px;font-family:'Consolas',monospace;}
+
+/* ── SCROLLBAR DECORATIONS ── */
+.scrollbar-deco{position:absolute;right:0;width:10px;background:rgba(255,200,0,0.3);}
+
+/* Highlighted match */
+.match-highlight{background:rgba(255,200,50,0.25);border:1px solid rgba(255,200,50,0.5);border-radius:2px;}
+.match-current{background:rgba(255,140,0,0.45);border:1px solid rgba(255,140,0,0.8);border-radius:2px;}
+
+/* Folding */
+.fold-arrow{
+  position:absolute;left:0;width:14px;
+  text-align:center;cursor:pointer;color:var(--sidebar-muted);font-size:9px;
+}
+.fold-arrow:hover{color:var(--editor-fg);}
+.folded-line{color:var(--sidebar-muted);font-size:12px;cursor:pointer;}
+.folded-line:hover{color:var(--editor-fg);}
+
+/* Copilot panel */
+.copilot-panel{
+  position:fixed;right:0;top:30px;bottom:22px;width:380px;
+  background:var(--sidebar);border-left:1px solid var(--border);
+  display:none;flex-direction:column;z-index:500;
+}
+.copilot-panel.show{display:flex;}
+.cp-header{
+  height:35px;display:flex;align-items:center;
+  padding:0 12px;border-bottom:1px solid var(--border);gap:8px;
+}
+.cp-title{font-size:13px;font-weight:600;color:var(--editor-fg);}
+.cp-close{margin-left:auto;cursor:pointer;color:var(--sidebar-muted);}
+.cp-messages{flex:1;overflow-y:auto;padding:12px;}
+.cp-messages::-webkit-scrollbar{width:4px;}
+.cp-messages::-webkit-scrollbar-thumb{background:var(--scrollbar);}
+.cp-msg{margin-bottom:12px;}
+.cp-msg-user{background:rgba(0,122,204,0.15);border-radius:8px;padding:8px 12px;font-size:13px;color:var(--editor-fg);}
+.cp-msg-bot{font-size:13px;color:var(--editor-fg);}
+.cp-msg-bot code{background:rgba(255,255,255,0.08);border-radius:3px;padding:2px 5px;font-family:'Consolas',monospace;}
+.cp-input-row{
+  display:flex;align-items:flex-end;gap:6px;padding:8px 12px;
+  border-top:1px solid var(--border);
+}
+.cp-textarea{
+  flex:1;background:var(--input-bg);border:1px solid var(--input-border);
+  color:var(--editor-fg);font-size:13px;padding:6px 10px;outline:none;border-radius:4px;
+  resize:none;font-family:inherit;max-height:120px;min-height:36px;
+}
+.cp-textarea:focus{border-color:#007acc;}
+.cp-send{
+  width:32px;height:32px;background:var(--btn-bg);border:none;border-radius:4px;
+  color:#fff;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;
+  transition:background .1s;
+}
+.cp-send:hover{background:var(--btn-hover);}
+.cp-typing{display:flex;gap:4px;align-items:center;padding:8px 0;}
+.cp-dot{width:6px;height:6px;border-radius:50%;background:var(--sidebar-muted);animation:cpDot 1.2s ease-in-out infinite;}
+.cp-dot:nth-child(2){animation-delay:.2s;}
+.cp-dot:nth-child(3){animation-delay:.4s;}
+@keyframes cpDot{0%,60%,100%{opacity:.3}30%{opacity:1;transform:translateY(-3px);}}
+
+/* ── HOVER CARD ── */
+.hover-card{
+  position:fixed;background:var(--panel-header);
+  border:1px solid var(--dropdown-border);border-radius:4px;
+  padding:8px 12px;max-width:400px;z-index:300;
+  box-shadow:0 4px 16px rgba(0,0,0,0.4);display:none;pointer-events:none;
+  font-size:12px;line-height:1.6;color:var(--editor-fg);
+}
+.hover-card.show{display:block;}
+.hover-card-title{font-weight:700;color:var(--s-fn);margin-bottom:4px;}
+.hover-card-type{font-family:'Consolas',monospace;color:var(--s-kw);}
+
+/* Indent guides */
+.indent-guide{display:inline-block;border-left:1px solid rgba(255,255,255,0.08);width:0;margin-left:-1px;}
+body.light .indent-guide{border-left-color:rgba(0,0,0,0.08);}
+
+/* Loading */
+.loading{display:flex;align-items:center;justify-content:center;flex:1;color:var(--sidebar-muted);gap:8px;}
+</style>
+</head>
+<body>
+
+<!-- ── TITLE BAR ── -->
+<div class="titlebar">
+  <div class="tdots">
+    <div class="tdot tdot-r" onclick="notify('info','CEWCMM','Use Ctrl+W to close tabs')"></div>
+    <div class="tdot tdot-y" onclick="toggleMinimize()"></div>
+    <div class="tdot tdot-g" onclick="toggleZen()"></div>
+  </div>
+  <div class="tmenus">
+    <div class="tmenu" data-menu="file">File</div>
+    <div class="tmenu" data-menu="edit">Edit</div>
+    <div class="tmenu" data-menu="selection">Selection</div>
+    <div class="tmenu" data-menu="view">View</div>
+    <div class="tmenu" data-menu="go">Go</div>
+    <div class="tmenu" data-menu="run">Run</div>
+    <div class="tmenu" data-menu="terminal">Terminal</div>
+    <div class="tmenu" data-menu="help">Help</div>
+  </div>
+  <div class="ttitle">CEWCMM — by MONTOO &nbsp;●&nbsp; my-project</div>
+  <div class="tcontrols">
+    <div class="tctrl">─</div>
+    <div class="tctrl">⬜</div>
+    <div class="tctrl cl">✕</div>
+  </div>
+</div>
+
+<!-- Dropdown Menus -->
+<div class="dropdown" id="dd-file">
+  <div class="dd-item" onclick="newFile()"><span>New File</span><span class="dd-key">Ctrl+N</span></div>
+  <div class="dd-item" onclick="newFolder()"><span>New Folder</span></div>
+  <div class="dd-sep"></div>
+  <div class="dd-item" onclick="openFile()"><span>Open File…</span><span class="dd-key">Ctrl+O</span></div>
+  <div class="dd-item" onclick="openFolder()"><span>Open Folder…</span><span class="dd-key">Ctrl+K Ctrl+O</span></div>
+  <div class="dd-sep"></div>
+  <div class="dd-item" onclick="saveFile()"><span>Save</span><span class="dd-key">Ctrl+S</span></div>
+  <div class="dd-item" onclick="saveAs()"><span>Save As…</span><span class="dd-key">Ctrl+Shift+S</span></div>
+  <div class="dd-item" onclick="saveAll()"><span>Save All</span><span class="dd-key">Ctrl+K S</span></div>
+  <div class="dd-sep"></div>
+  <div class="dd-item" onclick="revertFile()"><span>Revert File</span></div>
+  <div class="dd-sep"></div>
+  <div class="dd-item" onclick="closeTab()"><span>Close Editor</span><span class="dd-key">Ctrl+W</span></div>
+  <div class="dd-item" onclick="closeAll()"><span>Close All</span><span class="dd-key">Ctrl+K W</span></div>
+</div>
+<div class="dropdown" id="dd-edit">
+  <div class="dd-item" onclick="edUndo()"><span>Undo</span><span class="dd-key">Ctrl+Z</span></div>
+  <div class="dd-item" onclick="edRedo()"><span>Redo</span><span class="dd-key">Ctrl+Y</span></div>
+  <div class="dd-sep"></div>
+  <div class="dd-item" onclick="edCut()"><span>Cut</span><span class="dd-key">Ctrl+X</span></div>
+  <div class="dd-item" onclick="edCopy()"><span>Copy</span><span class="dd-key">Ctrl+C</span></div>
+  <div class="dd-item" onclick="edPaste()"><span>Paste</span><span class="dd-key">Ctrl+V</span></div>
+  <div class="dd-sep"></div>
+  <div class="dd-item" onclick="showFind()"><span>Find</span><span class="dd-key">Ctrl+F</span></div>
+  <div class="dd-item" onclick="showReplace()"><span>Replace</span><span class="dd-key">Ctrl+H</span></div>
+  <div class="dd-item" onclick="findInFiles()"><span>Find in Files</span><span class="dd-key">Ctrl+Shift+F</span></div>
+  <div class="dd-sep"></div>
+  <div class="dd-item" onclick="toggleComment()"><span>Toggle Comment</span><span class="dd-key">Ctrl+/</span></div>
+  <div class="dd-item" onclick="formatDoc()"><span>Format Document</span><span class="dd-key">Shift+Alt+F</span></div>
+</div>
+<div class="dropdown" id="dd-selection">
+  <div class="dd-item" onclick="selectAll()"><span>Select All</span><span class="dd-key">Ctrl+A</span></div>
+  <div class="dd-item" onclick="expandSelection()"><span>Expand Selection</span><span class="dd-key">Shift+Alt+→</span></div>
+  <div class="dd-sep"></div>
+  <div class="dd-item" onclick="addCursorAbove()"><span>Add Cursor Above</span><span class="dd-key">Ctrl+Alt+↑</span></div>
+  <div class="dd-item" onclick="addCursorBelow()"><span>Add Cursor Below</span><span class="dd-key">Ctrl+Alt+↓</span></div>
+  <div class="dd-item" onclick="selectNextOccurrence()"><span>Select Next Occurrence</span><span class="dd-key">Ctrl+D</span></div>
+  <div class="dd-sep"></div>
+  <div class="dd-item" onclick="sortLines()"><span>Sort Lines Ascending</span></div>
+</div>
+<div class="dropdown" id="dd-view">
+  <div class="dd-item" onclick="showPalette()"><span>Command Palette</span><span class="dd-key">Ctrl+Shift+P</span></div>
+  <div class="dd-sep"></div>
+  <div class="dd-item" onclick="toggleSidebar()"><span>Toggle Sidebar</span><span class="dd-key">Ctrl+B</span></div>
+  <div class="dd-item" onclick="toggleMinimap()"><span>Toggle Minimap</span></div>
+  <div class="dd-item" onclick="toggleWordWrap()"><span>Toggle Word Wrap</span><span class="dd-key">Alt+Z</span></div>
+  <div class="dd-item" onclick="togglePanel()"><span>Toggle Panel</span><span class="dd-key">Ctrl+J</span></div>
+  <div class="dd-sep"></div>
+  <div class="dd-item" onclick="splitEditor()"><span>Split Editor</span><span class="dd-key">Ctrl+\</span></div>
+  <div class="dd-sep"></div>
+  <div class="dd-item" onclick="zoomIn()"><span>Zoom In</span><span class="dd-key">Ctrl+=</span></div>
+  <div class="dd-item" onclick="zoomOut()"><span>Zoom Out</span><span class="dd-key">Ctrl+-</span></div>
+  <div class="dd-item" onclick="resetZoom()"><span>Reset Zoom</span><span class="dd-key">Ctrl+0</span></div>
+  <div class="dd-sep"></div>
+  <div class="dd-item" onclick="toggleTheme()"><span>Toggle Light/Dark Theme</span><span class="dd-key">Ctrl+K Ctrl+T</span></div>
+</div>
+<div class="dropdown" id="dd-go">
+  <div class="dd-item" onclick="showGoto()"><span>Go to Line/Column…</span><span class="dd-key">Ctrl+G</span></div>
+  <div class="dd-item" onclick="quickOpen()"><span>Go to File…</span><span class="dd-key">Ctrl+P</span></div>
+  <div class="dd-item" onclick="showSymbols()"><span>Go to Symbol…</span><span class="dd-key">Ctrl+Shift+O</span></div>
+  <div class="dd-sep"></div>
+  <div class="dd-item" onclick="goBack()"><span>Go Back</span><span class="dd-key">Alt+←</span></div>
+  <div class="dd-item" onclick="goForward()"><span>Go Forward</span><span class="dd-key">Alt+→</span></div>
+</div>
+<div class="dropdown" id="dd-run">
+  <div class="dd-item" onclick="runCode()"><span>Run Code</span><span class="dd-key">Ctrl+F5</span></div>
+  <div class="dd-item" onclick="debugCode()"><span>Start Debugging</span><span class="dd-key">F5</span></div>
+  <div class="dd-sep"></div>
+  <div class="dd-item" onclick="addBreakpoint()"><span>Toggle Breakpoint</span><span class="dd-key">F9</span></div>
+  <div class="dd-item" onclick="runSelectedText()"><span>Run Selected Text</span></div>
+</div>
+<div class="dropdown" id="dd-terminal">
+  <div class="dd-item" onclick="newTerminal()"><span>New Terminal</span><span class="dd-key">Ctrl+`</span></div>
+  <div class="dd-item" onclick="splitTerminal()"><span>Split Terminal</span><span class="dd-key">Ctrl+Shift+5</span></div>
+  <div class="dd-sep"></div>
+  <div class="dd-item" onclick="clearTerminal()"><span>Clear Terminal</span></div>
+  <div class="dd-item" onclick="killTerminal()"><span>Kill Terminal</span></div>
+</div>
+<div class="dropdown" id="dd-help">
+  <div class="dd-item" onclick="showWelcome()"><span>Welcome</span></div>
+  <div class="dd-item" onclick="showShortcuts()"><span>Keyboard Shortcuts</span><span class="dd-key">Ctrl+K Ctrl+S</span></div>
+  <div class="dd-sep"></div>
+  <div class="dd-item" onclick="notify('info','CEWCMM','Version 1.0.0 · by MONTOO')"><span>About</span></div>
+</div>
+
+<!-- ── APP BODY ── -->
+<div class="appbody" id="appbody">
+
+  <!-- ACTIVITY BAR -->
+  <div class="actbar">
+    <div class="ab-item active" data-panel="explorer" onclick="switchActivity('explorer',this)">
+      <span class="ab-icon">📋</span>
+      <div class="ab-tooltip">Explorer</div>
+    </div>
+    <div class="ab-item" data-panel="search" onclick="switchActivity('search',this)">
+      <span class="ab-icon">🔍</span>
+      <div class="ab-tooltip">Search (Ctrl+Shift+F)</div>
+    </div>
+    <div class="ab-item" data-panel="git" onclick="switchActivity('git',this)">
+      <span class="ab-icon">⑂</span>
+      <span class="ab-badge" id="git-badge">3</span>
+      <div class="ab-tooltip">Source Control (Ctrl+Shift+G)</div>
+    </div>
+    <div class="ab-item" data-panel="run" onclick="switchActivity('run',this)">
+      <span class="ab-icon">▷</span>
+      <div class="ab-tooltip">Run and Debug (Ctrl+Shift+D)</div>
+    </div>
+    <div class="ab-item" data-panel="ext" onclick="switchActivity('ext',this)">
+      <span class="ab-icon">⊞</span>
+      <div class="ab-tooltip">Extensions (Ctrl+Shift+X)</div>
+    </div>
+    <div class="ab-item" data-panel="copilot" onclick="toggleCopilot()">
+      <span class="ab-icon">✦</span>
+      <div class="ab-tooltip">GitHub Copilot</div>
+    </div>
+    <div class="ab-bottom">
+      <div class="ab-item" data-panel="settings" onclick="switchActivity('settings',this)">
+        <span class="ab-icon">⚙</span>
+        <div class="ab-tooltip">Settings</div>
+      </div>
+      <div class="ab-item" onclick="notify('info','Account','Signed in as MONTOO')">
+        <span class="ab-icon">👤</span>
+        <div class="ab-tooltip">Accounts</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+
+    <!-- EXPLORER -->
+    <div id="panel-explorer" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+      <div class="sb-title">
+        Explorer
+        <div class="sb-actions">
+          <div class="sb-btn" onclick="newFile()" title="New File">+</div>
+          <div class="sb-btn" onclick="newFolder()" title="New Folder">📁</div>
+          <div class="sb-btn" onclick="collapseAll()" title="Collapse All">⊟</div>
+          <div class="sb-btn" onclick="refreshTree()" title="Refresh">↺</div>
+        </div>
+      </div>
+      <div class="file-tree" id="fileTree" oncontextmenu="showTreeCtx(event)"></div>
+    </div>
+
+    <!-- SEARCH -->
+    <div id="panel-search" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+      <div class="sb-title">Search</div>
+      <div class="search-sb">
+        <div class="search-row">
+          <input class="sb-input" id="globalSearch" placeholder="Search" oninput="globalSearchExec()">
+          <button class="sb-toggle" id="gs-case" onclick="toggleGSOption('case')" title="Match Case">Aa</button>
+          <button class="sb-toggle" id="gs-word" onclick="toggleGSOption('word')" title="Match Whole Word">Ab</button>
+          <button class="sb-toggle" id="gs-regex" onclick="toggleGSOption('regex')" title="Use Regex">.*</button>
+        </div>
+        <div class="search-row">
+          <input class="sb-input" id="globalReplace" placeholder="Replace" onkeydown="if(e.key=='Enter')replaceAll()">
+          <button class="sb-toggle" title="Replace All" onclick="replaceAll()" style="font-size:10px;width:40px;">All</button>
+        </div>
+        <div id="gs-count" class="sr-count"></div>
+        <div class="search-results" id="globalResults"></div>
+      </div>
+    </div>
+
+    <!-- GIT -->
+    <div id="panel-git" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+      <div class="sb-title">Source Control <span id="git-changes-count" style="font-size:11px;font-weight:400;opacity:0.7;text-transform:none;letter-spacing:0;">(3)</span></div>
+      <div class="git-sb" id="gitPanel"></div>
+    </div>
+
+    <!-- RUN -->
+    <div id="panel-run" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+      <div class="sb-title">Run & Debug</div>
+      <div style="padding:16px 12px;font-size:12px;color:var(--sidebar-muted);text-align:center;">
+        <div style="font-size:20px;margin-bottom:8px;">🚀</div>
+        No debug configuration found.<br><br>
+        <span style="color:#007acc;cursor:pointer;" onclick="notify('info','Debug','Create launch.json to configure debugging')">Create a launch.json file</span>
+        <div style="margin-top:16px;text-align:left;">
+          <div class="git-file" onclick="runCode()" style="padding:6px 8px;">▶ Run Code (Ctrl+F5)</div>
+          <div class="git-file" onclick="notify('info','Debug','Debugger started')" style="padding:6px 8px;">⏵ Start Debugging (F5)</div>
+          <div class="git-file" onclick="notify('info','Debug','All tests passed ✓')" style="padding:6px 8px;">🧪 Run All Tests</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXTENSIONS -->
+    <div id="panel-ext" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+      <div class="sb-title">Extensions</div>
+      <div style="padding:8px;">
+        <input class="sb-input" placeholder="Search Extensions in Marketplace" id="extSearch" oninput="filterExts(this.value)">
+      </div>
+      <div class="ext-list" id="extList"></div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div id="panel-settings" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+      <div class="sb-title">Settings</div>
+      <div style="font-size:11px;color:var(--sidebar-muted);padding:4px 12px;">User · Workspace</div>
+      <div class="file-tree">
+        <div class="sn-group">Editor</div>
+        <div class="sn-item active" onclick="showSettingsTab('editor',this)">Font</div>
+        <div class="sn-item" onclick="showSettingsTab('theme',this)">Theme</div>
+        <div class="sn-item" onclick="showSettingsTab('editor',this)">Minimap</div>
+        <div class="sn-item" onclick="showSettingsTab('editor',this)">Cursor</div>
+        <div class="sn-group">Workbench</div>
+        <div class="sn-item" onclick="showSettingsTab('workbench',this)">Appearance</div>
+        <div class="sn-item" onclick="showSettingsTab('keybindings',this)">Keybindings</div>
+        <div class="sn-group">Files</div>
+        <div class="sn-item" onclick="showSettingsTab('files',this)">Auto Save</div>
+        <div class="sn-item" onclick="showSettingsTab('files',this)">Encoding</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- EDITOR ZONE -->
+  <div class="edzone" id="edzone">
+
+    <!-- TABS -->
+    <div class="tabs-bar" id="tabsBar">
+      <div class="tab-add" onclick="newFile()" title="New File (Ctrl+N)">+</div>
+    </div>
+
+    <!-- BREADCRUMB -->
+    <div class="breadcrumb" id="breadcrumb"></div>
+
+    <!-- EDITOR BODY -->
+    <div class="split-v" id="splitV">
+      <div class="editor-group" id="editorGroup">
+        <div class="editor-pane" id="editorPane">
+          <!-- Splash screen -->
+          <div class="splash" id="splash">
+            <div class="splash-logo">⊞</div>
+            <div class="splash-name">CEWCMM</div>
+            <div class="splash-sub">Code Editor · by MONTOO</div>
+            <div class="splash-links">
+              <div class="splash-link" onclick="newFile()">New File</div>
+              <div class="splash-link" onclick="openFile()">Open File</div>
+              <div class="splash-link" onclick="showPalette()">Command Palette</div>
+              <div class="splash-link" onclick="showShortcuts()">Keyboard Shortcuts</div>
+            </div>
+            <div style="margin-top:12px;color:var(--sidebar-muted);font-size:12px;">Recent</div>
+            <div class="recent-list" id="recentList"></div>
+          </div>
+
+          <!-- GUTTER -->
+          <div class="gutter" id="gutter" style="display:none;">
+            <div class="gutter-nums" id="gutterNums"></div>
+          </div>
+
+          <!-- CODE AREA -->
+          <div class="code-wrap" id="codeWrap" style="display:none;" onscroll="onEditorScroll()">
+            <div class="find-widget" id="findWidget">
+              <div class="find-row">
+                <input class="find-inp" id="findInp" placeholder="Find" oninput="execFind()">
+                <button class="find-toggle" id="ft-case" onclick="toggleFindOpt('case')" title="Match Case">Aa</button>
+                <button class="find-toggle" id="ft-word" onclick="toggleFindOpt('word')" title="Whole Word">Ab</button>
+                <button class="find-toggle" id="ft-regex" onclick="toggleFindOpt('regex')" title="Regex">.*</button>
+                <span class="find-count" id="findCount"></span>
+                <button class="find-btn" onclick="findPrev()" title="Previous (Shift+F3)">↑</button>
+                <button class="find-btn" onclick="findNext()" title="Next (F3)">↓</button>
+                <span class="find-close" onclick="closeFind()">✕</span>
+              </div>
+              <div class="find-row" id="replaceRow" style="display:none;">
+                <input class="find-inp" id="replaceInp" placeholder="Replace">
+                <button class="find-replace-btn" onclick="replaceCurrent()">Replace</button>
+                <button class="find-replace-btn" onclick="replaceAllInEditor()">Replace All</button>
+              </div>
+            </div>
+            <textarea class="code-editor" id="codeEditor"
+              spellcheck="false"
+              autocorrect="off"
+              autocapitalize="off"
+              autocomplete="off"
+              wrap="off"
+            ></textarea>
+          </div>
+
+          <!-- MINIMAP -->
+          <div class="minimap" id="minimap" style="display:none;">
+            <div class="mm-viewport" id="mmViewport"></div>
+            <canvas id="mmCanvas" style="display:block;"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- RESIZE HANDLE -->
+      <div class="resize-h" id="resizeH" onmousedown="startResize(event,'h')"></div>
+
+      <!-- PANEL -->
+      <div class="panel" id="bottomPanel" style="height:220px;">
+        <div class="panel-header">
+          <div class="panel-tabs-wrap">
+            <div class="ptab active" data-tab="terminal" onclick="switchPanelTab('terminal',this)">TERMINAL</div>
+            <div class="ptab" data-tab="problems" onclick="switchPanelTab('problems',this)">PROBLEMS</div>
+            <div class="ptab" data-tab="output" onclick="switchPanelTab('output',this)">OUTPUT</div>
+            <div class="ptab" data-tab="debug" onclick="switchPanelTab('debug',this)">DEBUG CONSOLE</div>
+            <div class="ptab" data-tab="ports" onclick="switchPanelTab('ports',this)">PORTS</div>
+          </div>
+          <div class="panel-acts">
+            <div class="panel-act" onclick="newTerminal()" title="New Terminal">+</div>
+            <div class="panel-act" onclick="splitTerminal()" title="Split Terminal">⊟</div>
+            <div class="panel-act" onclick="clearTerminal()" title="Clear">🗑</div>
+            <div class="panel-act" onclick="maximizePanel()" title="Maximize/Restore">⬜</div>
+            <div class="panel-act" onclick="togglePanel()" title="Hide Panel">✕</div>
+          </div>
+        </div>
+        <div class="panel-body">
+          <!-- Terminal -->
+          <div id="tab-terminal" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+            <div class="term-tabs" id="termTabs">
+              <div class="term-tab active" id="tt-1">bash &nbsp;×</div>
+              <div class="term-tab-add" onclick="newTerminal()">+</div>
+              <div class="term-split-btn" onclick="splitTerminal()">⊟ Split</div>
+            </div>
+            <div class="terminal" id="terminal"></div>
+            <div style="display:flex;align-items:center;padding:2px 12px;border-top:1px solid var(--border);">
+              <span class="term-prompt">CEWCMM &nbsp;</span>
+              <input class="term-input" id="termInput" placeholder="Type a command..." onkeydown="termKeyDown(event)">
+            </div>
+          </div>
+          <!-- Problems -->
+          <div id="tab-problems" class="panel-content" style="display:none;">
+            <div id="problemsList"></div>
+          </div>
+          <!-- Output -->
+          <div id="tab-output" class="panel-content" style="display:none;padding:8px 12px;font-family:'Consolas',monospace;font-size:12px;color:var(--sidebar-muted);">
+            <div>[Extension Host] CEWCMM v1.0.0 activated</div>
+            <div>[Extension Host] Language servers loaded: JS, CSS, HTML, JSON</div>
+          </div>
+          <!-- Debug -->
+          <div id="tab-debug" class="panel-content" style="display:none;padding:8px 12px;font-family:'Consolas',monospace;font-size:12px;color:var(--sidebar-muted);">
+            No debug sessions active. Use F5 or Run > Start Debugging.
+          </div>
+          <!-- Ports -->
+          <div id="tab-ports" class="panel-content" style="display:none;padding:8px 12px;font-size:12px;">
+            <div style="color:var(--sidebar-muted);text-align:center;margin-top:16px;">No forwarded ports. <span style="color:#007acc;cursor:pointer;" onclick="notify('info','Ports','Forward a port to access running services')">Forward a Port</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- STATUS BAR -->
+<div class="statusbar" id="statusbar">
+  <div class="sb-item" onclick="notify('info','Git','Branch: main')" title="Git Branch">⎇ &nbsp;main</div>
+  <div class="sb-item" id="sb-errors" onclick="switchPanelTab('problems',document.querySelector('[data-tab=problems]'))">⊗ 0 &nbsp;⚠ 0</div>
+  <div class="sb-right">
+    <div class="sb-item" id="sb-cur" onclick="showGoto()">Ln 1, Col 1</div>
+    <div class="sb-item" id="sb-sel"></div>
+    <div class="sb-item" id="sb-spaces" onclick="notify('info','Indentation','Using 4 spaces')">Spaces: 4</div>
+    <div class="sb-item" id="sb-enc" onclick="notify('info','Encoding','UTF-8')">UTF-8</div>
+    <div class="sb-item" id="sb-eol">CRLF</div>
+    <div class="sb-item" id="sb-lang" onclick="changeLang()">JavaScript</div>
+    <div class="sb-item" onclick="showPalette()">✦ Copilot</div>
+    <div class="sb-item" title="CEWCMM by MONTOO" style="font-weight:600;letter-spacing:0.5px;">CEWCMM</div>
+    <div class="sb-item" onclick="notify('info','Notifications','No new notifications')">🔔</div>
+  </div>
+</div>
+
+<!-- ── OVERLAYS ── -->
+<div class="overlay" id="overlay" onclick="closeAllOverlays()"></div>
+
+<!-- Command Palette -->
+<div class="palette" id="palette">
+  <input class="palette-input" id="paletteInput" placeholder="Type a command..." oninput="filterPalette(this.value)" onkeydown="paletteKey(event)">
+  <div class="palette-list" id="paletteList"></div>
+</div>
+
+<!-- Go To Line -->
+<div class="goto-widget" id="gotoWidget">
+  <input class="goto-inp" id="gotoInp" placeholder="Type a line number (e.g. :16)" onkeydown="gotoKey(event)">
+</div>
+
+<!-- Keyboard Shortcuts -->
+<div class="palette" id="shortcutsPanel" style="width:700px;max-height:80vh;">
+  <div style="display:flex;align-items:center;padding:10px 16px;border-bottom:1px solid var(--dropdown-border);">
+    <span style="font-size:14px;font-weight:600;color:var(--editor-fg);">Keyboard Shortcuts</span>
+    <input class="find-inp" placeholder="Search keybindings..." style="margin-left:16px;flex:1;" oninput="filterShortcuts(this.value)">
+    <span class="find-close" onclick="closeAllOverlays()">✕</span>
+  </div>
+  <div class="palette-list" id="shortcutsList" style="max-height:60vh;"></div>
+</div>
+
+<!-- Context Menu -->
+<div class="ctx" id="edCtx">
+  <div class="ctx-item" onclick="edCut()"><span class="ctx-icon">✂</span>Cut<span class="ctx-key">Ctrl+X</span></div>
+  <div class="ctx-item" onclick="edCopy()"><span class="ctx-icon">📋</span>Copy<span class="ctx-key">Ctrl+C</span></div>
+  <div class="ctx-item" onclick="edPaste()"><span class="ctx-icon">📄</span>Paste<span class="ctx-key">Ctrl+V</span></div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item" onclick="selectAll()"><span class="ctx-icon"></span>Select All<span class="ctx-key">Ctrl+A</span></div>
+  <div class="ctx-item" onclick="selectNextOccurrence()"><span class="ctx-icon"></span>Select Next Occurrence<span class="ctx-key">Ctrl+D</span></div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item" onclick="toggleComment()"><span class="ctx-icon">#</span>Toggle Line Comment<span class="ctx-key">Ctrl+/</span></div>
+  <div class="ctx-item" onclick="formatDoc()"><span class="ctx-icon">≡</span>Format Document<span class="ctx-key">Shift+Alt+F</span></div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item" onclick="runCode()"><span class="ctx-icon">▷</span>Run Code<span class="ctx-key">Ctrl+F5</span></div>
+  <div class="ctx-item" onclick="runSelectedText()"><span class="ctx-icon">▷</span>Run Selected Text</div>
+</div>
+
+<div class="ctx" id="treeCtx">
+  <div class="ctx-item" onclick="newFile()">New File</div>
+  <div class="ctx-item" onclick="newFolder()">New Folder</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item" onclick="renameFile()">Rename<span class="ctx-key">F2</span></div>
+  <div class="ctx-item" onclick="deleteFile()" style="color:#f48771;">Delete<span class="ctx-key">Delete</span></div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item" onclick="copyPath()">Copy Path<span class="ctx-key">Shift+Alt+C</span></div>
+  <div class="ctx-item" onclick="revealInFinder()">Reveal in Explorer</div>
+</div>
+
+<!-- Notifications -->
+<div class="notif-stack" id="notifStack"></div>
+
+<!-- Copilot Panel -->
+<div class="copilot-panel" id="copilotPanel">
+  <div class="cp-header">
+    <span style="font-size:14px;">✦</span>
+    <span class="cp-title">GitHub Copilot Chat</span>
+    <div style="font-size:11px;color:var(--sidebar-muted);margin-left:8px;">Powered by CEWCMM AI</div>
+    <div class="cp-close" onclick="toggleCopilot()">✕</div>
+  </div>
+  <div class="cp-messages" id="cpMessages">
+    <div class="cp-msg">
+      <div class="cp-msg-bot">👋 Hi! I'm your CEWCMM AI assistant. I can help you with:<br><br>
+      • <b>Writing code</b> — just describe what you need<br>
+      • <b>Explaining code</b> — select code and ask me<br>
+      • <b>Debugging</b> — paste your error and I'll help<br>
+      • <b>Refactoring</b> — I can suggest improvements<br><br>
+      What would you like to build today?</div>
+    </div>
+  </div>
+  <div class="cp-input-row">
+    <textarea class="cp-textarea" id="cpInput" placeholder="Ask Copilot... (Enter to send)" rows="1"
+      onkeydown="cpKeyDown(event)" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px'"></textarea>
+    <button class="cp-send" onclick="cpSend()">➤</button>
+  </div>
+</div>
+
+<!-- Hover Card -->
+<div class="hover-card" id="hoverCard">
+  <div class="hover-card-title" id="hcTitle"></div>
+  <div class="hover-card-type" id="hcType"></div>
+  <div id="hcDesc" style="margin-top:4px;"></div>
+</div>
+
+<script>
+'use strict';
+// ══════════════════════════════════════════════════
+//  CEWCMM — Full Editor Engine · by MONTOO
+// ══════════════════════════════════════════════════
+
+// ── FILE SYSTEM ──────────────────────────────────
+const FS = {
+  files: {
+    'index.js': { content: `// CEWCMM Code Editor — Created by MONTOO
+// index.js — Main Entry Point
+
+import { Editor } from './utils/editor.js';
+import { FileSystem } from './utils/fs.js';
+
+const VERSION = '1.0.0';
+const AUTHOR  = 'MONTOO';
+
+/**
+ * Creates and initializes the CEWCMM editor.
+ * @param {Object} config - Editor configuration
+ * @returns {Editor} The initialized editor instance
+ */
+async function bootstrap(config = {}) {
+  const fs = new FileSystem({ root: config.root ?? '.' });
+  const editor = new Editor({
+    container: config.container ?? '#app',
+    theme:     config.theme     ?? 'dark',
+    fontSize:  config.fontSize  ?? 13,
+    ...config,
+  });
+
+  await editor.init();
+  await fs.watch('.', (event, path) => {
+    if (event === 'change') editor.reload(path);
+  });
+
+  console.log(\`CEWCMM v\${VERSION} ready — by \${AUTHOR}\`);
+  return editor;
+}
+
+// Main
+bootstrap({
+  container: '#cewcmm',
+  theme: 'dark',
+  fontSize: 13,
+  wordWrap: false,
+  minimap: true,
+})
+.then(editor => {
+  window.editor = editor;
+  document.dispatchEvent(new CustomEvent('cewcmm:ready', { detail: editor }));
+})
+.catch(err => {
+  console.error('Bootstrap failed:', err);
+});
+`, lang:'JavaScript', icon:'📄', modified: false, folder:'root' },
+
+    'style.css': { content: `/* CEWCMM — style.css
+   Created by MONTOO */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+
+:root {
+  --primary:   #007acc;
+  --bg:        #1e1e1e;
+  --surface:   #252526;
+  --border:    #454545;
+  --text:      #d4d4d4;
+  --muted:     #858585;
+  --radius:    4px;
+  --shadow:    0 4px 16px rgba(0,0,0,0.4);
+}
+
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+/* Layout */
+.container  { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+.flex       { display: flex; }
+.flex-col   { display: flex; flex-direction: column; }
+.gap-4      { gap: 4px; }
+.gap-8      { gap: 8px; }
+.gap-16     { gap: 16px; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+
+/* Components */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+}
+.btn:hover  { opacity: 0.85; }
+.btn:active { transform: scale(0.98); }
+.btn-ghost  { background: transparent; border: 1px solid var(--border); color: var(--text); }
+
+/* Card */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) * 2);
+  padding: 16px;
+  box-shadow: var(--shadow);
+}
+`, lang:'CSS', icon:'🎨', modified: false, folder:'root' },
+
+    'index.html': { content: `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CEWCMM Code Editor by MONTOO">
+  <title>CEWCMM — by MONTOO</title>
+  <link rel="icon" href="/favicon.ico">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <header class="header">
+      <div class="container flex items-center justify-between">
+        <div class="logo">
+          <h1>CEWCMM</h1>
+          <span>by MONTOO</span>
+        </div>
+        <nav class="nav">
+          <a href="#features">Features</a>
+          <a href="#docs">Docs</a>
+          <a href="#about">About</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section id="hero" class="hero container">
+        <h2>The Code Editor<br>Built Different</h2>
+        <p>Fast, lightweight, and beautiful. CEWCMM is the editor <br>you've been waiting for.</p>
+        <div class="flex gap-8">
+          <button class="btn" id="getStarted">Get Started</button>
+          <button class="btn btn-ghost">Learn More</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="index.js"><\/script>
+</body>
+</html>
+`, lang:'HTML', icon:'🌐', modified: false, folder:'root' },
+
+    'package.json': { content: `{
+  "name": "cewcmm",
+  "version": "1.0.0",
+  "description": "CEWCMM Code Editor — by MONTOO",
+  "author": "MONTOO <montoo@cewcmm.dev>",
+  "license": "MIT",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start":   "node index.js",
+    "dev":     "nodemon --watch src index.js",
+    "build":   "webpack --mode production --config webpack.config.js",
+    "test":    "jest --coverage",
+    "lint":    "eslint src/**/*.js",
+    "format":  "prettier --write src/**/*.{js,css,html}"
+  },
+  "dependencies": {
+    "express":    "^4.18.2",
+    "dotenv":     "^16.3.1",
+    "lodash":     "^4.17.21",
+    "zod":        "^3.22.0"
+  },
+  "devDependencies": {
+    "nodemon":   "^3.0.1",
+    "jest":      "^29.7.0",
+    "webpack":   "^5.88.0",
+    "eslint":    "^8.50.0",
+    "prettier":  "^3.0.3",
+    "@types/node": "^20.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
+`, lang:'JSON', icon:'📦', modified: false, folder:'root' },
+
+    'utils/helper.js': { content: `// CEWCMM · utils/helper.js
+// Utility Functions — by MONTOO
+
+/**
+ * Clamps a value between min and max.
+ */
+export const clamp = (val, min, max) =>
+  Math.min(Math.max(val, min), max);
+
+/**
+ * Creates a debounced version of a function.
+ * @param {Function} fn - Function to debounce
+ * @param {number} ms - Delay in milliseconds
+ */
+export const debounce = (fn, ms = 300) => {
+  let timer;
+  return function (...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn.apply(this, args), ms);
+  };
+};
+
+/**
+ * Creates a throttled version of a function.
+ */
+export const throttle = (fn, ms = 100) => {
+  let last = 0;
+  return function (...args) {
+    const now = Date.now();
+    if (now - last >= ms) {
+      last = now;
+      return fn.apply(this, args);
+    }
+  };
+};
+
+/**
+ * Deep clone an object.
+ */
+export const deepClone = (obj) =>
+  JSON.parse(JSON.stringify(obj));
+
+/**
+ * Format bytes to human readable string.
+ */
+export const formatBytes = (bytes, dec = 2) => {
+  if (!bytes) return '0 B';
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / k ** i).toFixed(dec)) + ' ' + sizes[i];
+};
+
+/**
+ * Generate a UUID v4.
+ */
+export const uuid = () =>
+  'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+    const r = (Math.random() * 16) | 0;
+    return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16);
+  });
+
+export default { clamp, debounce, throttle, deepClone, formatBytes, uuid };
+`, lang:'JavaScript', icon:'🔧', modified: false, folder:'utils' },
+
+    'utils/api.js': { content: `// CEWCMM · utils/api.js
+// HTTP Client — by MONTOO
+
+const BASE_URL = import.meta.env?.VITE_API_URL ?? 'https://api.example.com/v1';
+
+class APIError extends Error {
+  constructor(status, message, data) {
+    super(message);
+    this.name = 'APIError';
+    this.status = status;
+    this.data = data;
+  }
+}
+
+/**
+ * Core fetch wrapper with error handling.
+ */
+const request = async (endpoint, options = {}) => {
+  const url = \`\${BASE_URL}\${endpoint}\`;
+  const config = {
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+    ...options,
+  };
+
+  const response = await fetch(url, config);
+
+  if (!response.ok) {
+    const data = await response.json().catch(() => null);
+    throw new APIError(response.status, response.statusText, data);
+  }
+
+  if (response.status === 204) return null;
+  return response.json();
+};
+
+export const api = {
+  get:    (url, opts)         => request(url, { method: 'GET',    ...opts }),
+  post:   (url, data, opts)   => request(url, { method: 'POST',   body: JSON.stringify(data), ...opts }),
+  put:    (url, data, opts)   => request(url, { method: 'PUT',    body: JSON.stringify(data), ...opts }),
+  patch:  (url, data, opts)   => request(url, { method: 'PATCH',  body: JSON.stringify(data), ...opts }),
+  delete: (url, opts)         => request(url, { method: 'DELETE', ...opts }),
+};
+
+export { APIError };
+`, lang:'JavaScript', icon:'🔌', modified: false, folder:'utils' },
+
+    '.gitignore': { content: `node_modules/
+dist/
+build/
+.env
+.env.local
+.DS_Store
+*.log
+npm-debug.log*
+coverage/
+.nyc_output/
+.cache/
+.parcel-cache/
+*.orig
+.vscode/
+!.vscode/extensions.json
+`, lang:'Text', icon:'📝', modified: false, folder:'root' },
+
+    'README.md': { content: `# CEWCMM
+
+> **C**ode **E**ditor **W**ith **C**omplete **M**odern **M**agic  
+> Created by **MONTOO**
+
+[![Version](https://img.shields.io/badge/version-1.0.0-blue)](https://github.com/montoo/cewcmm)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
+## ✨ Features
+
+- 🚀 **Fast & Lightweight** — Built for performance
+- 🎨 **Syntax Highlighting** — 50+ languages supported
+- 🤖 **AI Integration** — Copilot-style assistance
+- 🔍 **Smart Search** — Regex, case-sensitive, whole-word
+- 🌿 **Git Integration** — Built-in source control
+- 🧩 **Extensions** — Rich extension marketplace
+- 🌙 **Themes** — Dark, Light, High Contrast & more
+- 📟 **Integrated Terminal** — Multiple terminals, split view
+
+## 🚀 Getting Started
+
+\`\`\`bash
+# Clone the repository
+git clone https://github.com/montoo/cewcmm.git
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+\`\`\`
+
+## 📋 Keyboard Shortcuts
+
+| Action | Shortcut |
+|--------|----------|
+| Command Palette | Ctrl+Shift+P |
+| Quick Open | Ctrl+P |
+| Find | Ctrl+F |
+| Replace | Ctrl+H |
+| Toggle Terminal | Ctrl+\` |
+| Format Document | Shift+Alt+F |
+| Go to Line | Ctrl+G |
+
+## 🤝 Contributing
+
+Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+
+## 📄 License
+
+MIT © 2024 **MONTOO**
+`, lang:'Markdown', icon:'📋', modified: false, folder:'root' },
+  },
+  folders: ['root','utils'],
+};
+
+// ── STATE ────────────────────────────────────────
+const state = {
+  openTabs: [],
+  activeFile: null,
+  contents: {},
+  savedContents: {},
+  history: [],
+  histIdx: -1,
+  findOpts: { case: false, word: false, regex: false },
+  gsOpts: { case: false, word: false, regex: false },
+  panelOpen: true,
+  sidebarOpen: true,
+  minimapVisible: true,
+  wordWrap: false,
+  fontSize: 13,
+  termHistory: [],
+  termHistIdx: -1,
+  terminals: [{ id:1, name:'bash' }],
+  activeTermId: 1,
+  problems: [],
+  gitChanges: [
+    { file:'index.js', status:'M' },
+    { file:'style.css', status:'U' },
+    { file:'.gitignore', status:'A' },
+  ],
+  paletteFocusIdx: 0,
+  shortcuts: [],
+  copilotOpen: false,
+  lastSaved: {},
+  zoom: 1,
+};
+
+// ── DOM REFS ─────────────────────────────────────
+const $ = id => document.getElementById(id);
+const q = sel => document.querySelector(sel);
+const qa = sel => [...document.querySelectorAll(sel)];
+
+const codeEditor   = $('codeEditor');
+const gutterNums   = $('gutterNums');
+const codeWrap     = $('codeWrap');
+const minimap      = $('minimap');
+const findWidget   = $('findWidget');
+const tabsBar      = $('tabsBar');
+const breadcrumb   = $('breadcrumb');
+const sidebar      = $('sidebar');
+const bottomPanel  = $('bottomPanel');
+const terminal_el  = $('terminal');
+const termInput    = $('termInput');
+const splash       = $('splash');
+const gutter       = $('gutter');
+
+// ── SYNTAX HIGHLIGHTER ───────────────────────────
+const syntaxDefs = {
+  JavaScript: {
+    rules: [
+      { type:'cmt-block', rx:/\/\*[\s\S]*?\*\//g },
+      { type:'cmt',       rx:/\/\/.*/g },
+      { type:'str',       rx:/`[\s\S]*?`/g },
+      { type:'str',       rx:/"(?:[^"\\]|\\.)*"/g },
+      { type:'str',       rx:/'(?:[^'\\]|\\.)*'/g },
+      { type:'rx',        rx:/\/(?![/\*])(?:[^/\\]|\\.)+\/[gimsuy]*/g },
+      { type:'num',       rx:/\b(?:0x[\da-fA-F]+|0b[01]+|0o[0-7]+|\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)\b/g },
+      { type:'kw',        rx:/\b(?:async|await|break|case|catch|class|const|continue|debugger|default|delete|do|else|export|extends|finally|for|from|function|if|import|in|instanceof|let|new|of|return|static|super|switch|throw|try|typeof|var|void|while|with|yield)\b/g },
+      { type:'bool',      rx:/\b(?:true|false|null|undefined|NaN|Infinity|this|self|globalThis)\b/g },
+      { type:'cls',       rx:/\b[A-Z][A-Za-z0-9_]*\b/g },
+      { type:'dec',       rx:/@\w+/g },
+      { type:'fn',        rx:/\b([a-z_]\w*)\s*(?=\()/g },
+    ]
+  },
+  CSS: {
+    rules: [
+      { type:'cmt-block', rx:/\/\*[\s\S]*?\*\//g },
+      { type:'str',       rx:/"[^"]*"/g },
+      { type:'str',       rx:/'[^']*'/g },
+      { type:'kw',        rx:/\b(?:var|calc|rgb|rgba|hsl|hsla|linear-gradient|radial-gradient|url|env|min|max|clamp)\b/g },
+      { type:'cls',       rx:/(?:^|\{)[^:{\r\n]*(?=\{)/gm },
+      { type:'prop',      rx:/[\w-]+(?=\s*:)/g },
+      { type:'num',       rx:/-?[\d.]+(?:px|em|rem|%|vh|vw|fr|deg|s|ms)?\b/g },
+      { type:'bool',      rx:/#[0-9a-fA-F]{3,8}\b/g },
+    ]
+  },
+  HTML: {
+    rules: [
+      { type:'cmt-block', rx:/<!--[\s\S]*?-->/g },
+      { type:'str',       rx:/"[^"]*"/g },
+      { type:'str',       rx:/'[^']*'/g },
+      { type:'tag',       rx:/<\/?[\w-]+/g },
+      { type:'attr',      rx:/\b[\w-]+(?=\s*=)/g },
+      { type:'kw',        rx:/(?<=<\/?)[\w-]+/g },
+    ]
+  },
+  JSON: {
+    rules: [
+      { type:'kw',  rx:/"(?:[^"\\]|\\.)*"(?=\s*:)/g },
+      { type:'str', rx:/"(?:[^"\\]|\\.)*"/g },
+      { type:'num', rx:/-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?\b/g },
+      { type:'bool',rx:/\b(?:true|false|null)\b/g },
+    ]
+  },
+  Markdown: {
+    rules: [
+      { type:'kw',   rx:/^#{1,6}\s.+$/gm },
+      { type:'str',  rx:/`[^`]+`/g },
+      { type:'cmt',  rx:/^\s*>.*$/gm },
+      { type:'bool', rx:/\*\*[^*]+\*\*|__[^_]+__/g },
+      { type:'fn',   rx:/\[[^\]]+\]\([^)]+\)/g },
+    ]
+  },
+  Text: { rules: [] },
+};
+
+const colorMap = {
+  'kw':'--s-kw','str':'--s-str','cmt':'--s-cmt','cmt-block':'--s-cmt',
+  'num':'--s-num','fn':'--s-fn','cls':'--s-cls','prop':'--s-prop',
+  'op':'--s-op','tag':'--s-tag','attr':'--s-attr','val':'--s-val',
+  'bool':'--s-bool','rx':'--s-rx','dec':'--s-dec','type':'--s-type',
+};
+
+function highlight(code, lang) {
+  const def = syntaxDefs[lang];
+  if (!def || !def.rules.length) return escHtml(code);
+
+  const tokens = [];
+  const claimed = new Uint8Array(code.length);
+
+  for (const rule of def.rules) {
+    rule.rx.lastIndex = 0;
+    let m;
+    while ((m = rule.rx.exec(code)) !== null) {
+      const s = m.index, e = s + m[0].length;
+      let ok = true;
+      for (let i = s; i < e; i++) if (claimed[i]) { ok = false; break; }
+      if (ok) {
+        tokens.push({ s, e, type: rule.type });
+        for (let i = s; i < e; i++) claimed[i] = 1;
+      }
+    }
+  }
+  tokens.sort((a, b) => a.s - b.s);
+
+  let out = '', pos = 0;
+  for (const tk of tokens) {
+    if (tk.s > pos) out += escHtml(code.slice(pos, tk.s));
+    const css = colorMap[tk.type];
+    const col = css ? `color:var(${css})` : '';
+    if (tk.type === 'cmt' || tk.type === 'cmt-block')
+      out += `<span style="${col};font-style:italic">${escHtml(code.slice(tk.s, tk.e))}</span>`;
+    else
+      out += `<span style="${col}">${escHtml(code.slice(tk.s, tk.e))}</span>`;
+    pos = tk.e;
+  }
+  if (pos < code.length) out += escHtml(code.slice(pos));
+  return out;
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ── FILE TREE ────────────────────────────────────
+function buildTree() {
+  const tree = $('fileTree');
+  tree.innerHTML = '';
+  const rootEl = makeFolder('MY-PROJECT', 0, true);
+  tree.appendChild(rootEl);
+
+  // Root files
+  const rootFiles = Object.entries(FS.files).filter(([,v]) => v.folder === 'root');
+  const utilsFiles = Object.entries(FS.files).filter(([,v]) => v.folder === 'utils');
+
+  const utilsFolder = makeFolder('utils', 1, true);
+  tree.appendChild(utilsFolder);
+  utilsFiles.forEach(([name, fd]) => tree.appendChild(makeFileRow(name, fd, 2)));
+
+  rootFiles.forEach(([name, fd]) => {
+    if (!name.startsWith('.') || name === '.gitignore')
+      tree.appendChild(makeFileRow(name, fd, 1));
+  });
+}
+
+function makeFolder(name, depth, open) {
+  const div = document.createElement('div');
+  div.className = 'tree-row';
+  div.style.paddingLeft = (depth * 12 + 4) + 'px';
+  div.innerHTML = `
+    <span class="tree-arrow">${open ? '▾' : '▸'}</span>
+    <span class="tree-icon">📁</span>
+    <span class="tree-name">${name}</span>`;
+  div.onclick = () => {
+    const arrow = div.querySelector('.tree-arrow');
+    const icon = div.querySelector('.tree-icon');
+    if (arrow.textContent === '▾') { arrow.textContent = '▸'; icon.textContent = '📁'; }
+    else { arrow.textContent = '▾'; icon.textContent = '📂'; }
+  };
+  return div;
+}
+
+function makeFileRow(fname, fd, depth) {
+  const div = document.createElement('div');
+  div.className = 'tree-row' + (fname === state.activeFile ? ' selected' : '');
+  div.dataset.file = fname;
+  div.style.paddingLeft = (depth * 12 + 4) + 'px';
+  const dirty = fd.modified ? '<span style="color:#cca700;font-size:10px;">●</span>' : '';
+  div.innerHTML = `
+    <span class="tree-arrow"></span>
+    <span class="tree-icon">${fd.icon}</span>
+    <span class="tree-name">${fname.split('/').pop()}</span>${dirty}`;
+  div.onclick = () => openFileByName(fname);
+  div.oncontextmenu = (e) => { e.stopPropagation(); e.preventDefault(); state.ctxFile = fname; showCtx(e, $('treeCtx')); };
+  return div;
+}
+
+function refreshTree() { buildTree(); }
+
+function collapseAll() {
+  $('fileTree').querySelectorAll('.tree-arrow').forEach(a => { if(a.textContent==='▾') a.textContent='▸'; });
+}
+
+// ── TAB MANAGEMENT ───────────────────────────────
+function renderTabs() {
+  const bar = tabsBar;
+  const addBtn = bar.querySelector('.tab-add');
+  bar.innerHTML = '';
+  state.openTabs.forEach(fname => {
+    const fd = FS.files[fname];
+    if (!fd) return;
+    const dirty = fd.modified;
+    const display = fname.split('/').pop();
+    const tab = document.createElement('div');
+    tab.className = 'tab' + (fname === state.activeFile ? ' active' : '');
+    tab.dataset.file = fname;
+    tab.innerHTML = `
+      <span class="tab-icon">${fd.icon}</span>
+      <span class="tab-name">${display}</span>
+      ${dirty ? '<span class="tab-dirty"></span>' : ''}
+      <span class="tab-x" data-close="${fname}">✕</span>`;
+    tab.onclick = (e) => {
+      if (!e.target.dataset.close) openFileByName(fname);
+    };
+    tab.querySelector('.tab-x').onclick = (e) => { e.stopPropagation(); closeTabByName(fname); };
+    bar.appendChild(tab);
+  });
+  const add = document.createElement('div');
+  add.className = 'tab-add';
+  add.title = 'New File';
+  add.textContent = '+';
+  add.onclick = newFile;
+  bar.appendChild(add);
+}
+
+function openFileByName(fname) {
+  if (!FS.files[fname]) return;
+  // Save current
+  if (state.activeFile && codeEditor.style.display !== 'none') {
+    FS.files[state.activeFile].content = codeEditor.value;
+  }
+  if (!state.openTabs.includes(fname)) state.openTabs.push(fname);
+  state.activeFile = fname;
+
+  splash.style.display = 'none';
+  gutter.style.display = '';
+  codeWrap.style.display = '';
+  minimap.style.display = state.minimapVisible ? '' : 'none';
+
+  codeEditor.value = FS.files[fname].content;
+  codeEditor.className = 'code-editor' + (state.wordWrap ? ' wrap' : '');
+  codeEditor.style.fontSize = state.fontSize + 'px';
+
+  updateLineNums();
+  renderTabs();
+  buildTree();
+  updateBreadcrumb(fname);
+  updateStatusBar();
+  updateMinimap();
+  updateCursorPos();
+}
+
+function closeTabByName(fname) {
+  const idx = state.openTabs.indexOf(fname);
+  state.openTabs.splice(idx, 1);
+  if (state.activeFile === fname) {
+    const next = state.openTabs[idx] || state.openTabs[idx - 1] || null;
+    if (next) openFileByName(next);
+    else {
+      state.activeFile = null;
+      splash.style.display = '';
+      gutter.style.display = 'none';
+      codeWrap.style.display = 'none';
+      minimap.style.display = 'none';
+      codeEditor.value = '';
+      breadcrumb.innerHTML = '';
+    }
+  }
+  renderTabs();
+}
+
+function closeTab() { if (state.activeFile) closeTabByName(state.activeFile); }
+function closeAll() { [...state.openTabs].forEach(f => closeTabByName(f)); }
+
+// ── LINE NUMBERS ─────────────────────────────────
+function updateLineNums() {
+  const lines = codeEditor.value.split('\n');
+  gutterNums.textContent = lines.map((_,i) => i+1).join('\n');
+}
+
+function onEditorScroll() {
+  const sw = codeWrap;
+  const top = sw.scrollTop;
+  gutterNums.style.transform = `translateY(-${top}px)`;
+
+  // Minimap viewport
+  const ratio = top / (codeEditor.scrollHeight - sw.clientHeight || 1);
+  const mmH = minimap.clientHeight;
+  const vpH = Math.max(30, mmH * sw.clientHeight / (codeEditor.scrollHeight || 1));
+  $('mmViewport').style.top = (ratio * (mmH - vpH)) + 'px';
+  $('mmViewport').style.height = vpH + 'px';
+}
+
+// ── MINIMAP ──────────────────────────────────────
+function updateMinimap() {
+  const canvas = $('mmCanvas');
+  const code = codeEditor.value;
+  const lines = code.split('\n');
+  const W = 80, LH = 2, PAD = 3;
+  canvas.width = W;
+  canvas.height = Math.max(minimap.clientHeight || 400, lines.length * LH + PAD * 2);
+  canvas.style.width = W + 'px';
+  canvas.style.height = canvas.height + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, W, canvas.height);
+
+  const isDark = !document.body.classList.contains('light');
+  const colors = isDark
+    ? ['#569cd6','#ce9178','#6a9955','#d4d4d4','#dcdcaa','#4ec9b0','#b5cea8']
+    : ['#0000ff','#a31515','#008000','#000000','#795e26','#267f99','#098658'];
+
+  lines.slice(0, 300).forEach((line, i) => {
+    if (!line.trim()) return;
+    const indent = line.match(/^\s*/)[0].length;
+    const w = Math.min(W - PAD * 2 - indent * 1.5, line.trim().length * 0.55);
+    if (w < 2) return;
+    ctx.fillStyle = colors[i % colors.length];
+    ctx.globalAlpha = 0.45;
+    ctx.fillRect(PAD + indent * 1.5, PAD + i * LH, w, 1.2);
+  });
+  ctx.globalAlpha = 1;
+}
+
+// ── EDITOR EVENTS ────────────────────────────────
+codeEditor.addEventListener('input', () => {
+  if (state.activeFile) FS.files[state.activeFile].modified = true;
+  updateLineNums();
+  updateMinimap();
+  renderTabs();
+  buildTree();
+  updateStatusBar();
+  lintCode();
+  autoComplete();
+});
+
+codeEditor.addEventListener('click', updateCursorPos);
+codeEditor.addEventListener('keyup', updateCursorPos);
+codeEditor.addEventListener('scroll', () => {
+  gutterNums.style.transform = `translateY(-${codeEditor.scrollTop}px)`;
+});
+
+codeEditor.addEventListener('keydown', editorKeyDown);
+
+function editorKeyDown(e) {
+  const ta = codeEditor;
+
+  // Tab
+  if (e.key === 'Tab' && !e.ctrlKey) {
+    e.preventDefault();
+    const s = ta.selectionStart, end = ta.selectionEnd;
+    if (e.shiftKey) {
+      // Unindent
+      const lineStart = ta.value.lastIndexOf('\n', s - 1) + 1;
+      const line = ta.value.slice(lineStart, s);
+      if (line.startsWith('    ')) {
+        ta.value = ta.value.slice(0, lineStart) + line.slice(4) + ta.value.slice(s);
+        ta.selectionStart = ta.selectionEnd = s - 4;
+      }
+    } else {
+      const ins = '    ';
+      ta.value = ta.value.slice(0, s) + ins + ta.value.slice(end);
+      ta.selectionStart = ta.selectionEnd = s + 4;
+    }
+    codeEditor.dispatchEvent(new Event('input'));
+    return;
+  }
+
+  // Enter — auto indent
+  if (e.key === 'Enter') {
+    const s = ta.selectionStart;
+    const before = ta.value.slice(0, s);
+    const lines = before.split('\n');
+    const cur = lines[lines.length - 1];
+    const indent = cur.match(/^\s*/)[0];
+    const lastChar = cur.trimEnd().slice(-1);
+    const openBrackets = '{([';
+    const closeBrackets = '})]';
+    const closing = closeBrackets[openBrackets.indexOf(ta.value[s])];
+
+    if (openBrackets.includes(lastChar)) {
+      e.preventDefault();
+      const extra = indent + '    ';
+      let ins = '\n' + extra;
+      if (closing) ins += '\n' + indent + closing;
+      ta.value = ta.value.slice(0, s) + ins + ta.value.slice(ta.selectionEnd);
+      ta.selectionStart = ta.selectionEnd = s + extra.length + 1;
+      codeEditor.dispatchEvent(new Event('input'));
+      return;
+    }
+
+    e.preventDefault();
+    const ins = '\n' + indent;
+    ta.value = ta.value.slice(0, s) + ins + ta.value.slice(ta.selectionEnd);
+    ta.selectionStart = ta.selectionEnd = s + ins.length;
+    codeEditor.dispatchEvent(new Event('input'));
+    return;
+  }
+
+  // Auto-close brackets
+  const pairs = { '(':')', '[':']', '{':'}', '"':'"', "'":"'" };
+  if (pairs[e.key] && !e.ctrlKey && !e.metaKey) {
+    e.preventDefault();
+    const s = ta.selectionStart, end = ta.selectionEnd;
+    const sel = ta.value.slice(s, end);
+    ta.value = ta.value.slice(0, s) + e.key + sel + pairs[e.key] + ta.value.slice(end);
+    ta.selectionStart = ta.selectionEnd = s + 1;
+    return;
+  }
+
+  // Backspace — delete pair
+  if (e.key === 'Backspace') {
+    const s = ta.selectionStart;
+    if (ta.selectionStart === ta.selectionEnd) {
+      const pairs2 = ['()', '[]', '{}', '""', "''"];
+      const pair = ta.value[s-1] + ta.value[s];
+      if (pairs2.includes(pair)) {
+        e.preventDefault();
+        ta.value = ta.value.slice(0, s-1) + ta.value.slice(s+1);
+        ta.selectionStart = ta.selectionEnd = s - 1;
+        codeEditor.dispatchEvent(new Event('input'));
+        return;
+      }
+    }
+  }
+
+  // Ctrl shortcuts
+  if (e.ctrlKey || e.metaKey) {
+    switch (e.key.toLowerCase()) {
+      case 's': e.preventDefault(); saveFile(); break;
+      case 'f': e.preventDefault(); showFind(); break;
+      case 'h': e.preventDefault(); showReplace(); break;
+      case 'z': e.preventDefault(); edUndo(); break;
+      case 'y': e.preventDefault(); edRedo(); break;
+      case 'a': e.preventDefault(); ta.select(); break;
+      case '/': e.preventDefault(); toggleComment(); break;
+      case 'd': e.preventDefault(); selectNextOccurrence(); break;
+      case 'g': e.preventDefault(); showGoto(); break;
+      case 'p': if (e.shiftKey) { e.preventDefault(); showPalette(); } else { e.preventDefault(); quickOpen(); } break;
+      case 'b': e.preventDefault(); toggleSidebar(); break;
+      case 'j': e.preventDefault(); togglePanel(); break;
+      case 'w': e.preventDefault(); closeTab(); break;
+      case '=': e.preventDefault(); zoomIn(); break;
+      case '-': e.preventDefault(); zoomOut(); break;
+      case '0': e.preventDefault(); resetZoom(); break;
+      case 'f5': e.preventDefault(); runCode(); break;
+      case '\\': e.preventDefault(); splitEditor(); break;
+      case '`': e.preventDefault(); togglePanel(); break;
+    }
+    if (e.key === 'F5') { e.preventDefault(); runCode(); }
+  }
+
+  if (e.key === 'F5') { e.preventDefault(); runCode(); }
+  if (e.key === 'F2') { e.preventDefault(); renameFile(); }
+
+  // Alt shortcuts
+  if (e.altKey) {
+    if (e.key === 'ArrowUp')   { e.preventDefault(); moveLineUp(); }
+    if (e.key === 'ArrowDown') { e.preventDefault(); moveLineDown(); }
+    if (e.key === 'z')         { e.preventDefault(); toggleWordWrap(); }
+  }
+
+  updateCursorPos();
+}
+
+// ── CURSOR / STATUS ───────────────────────────────
+function updateCursorPos() {
+  const ta = codeEditor;
+  if (!ta.value) return;
+  const text = ta.value.slice(0, ta.selectionStart);
+  const lines = text.split('\n');
+  const ln = lines.length;
+  const col = lines[lines.length - 1].length + 1;
+  $('sb-cur').textContent = `Ln ${ln}, Col ${col}`;
+
+  const sel = ta.selectionEnd - ta.selectionStart;
+  $('sb-sel').textContent = sel > 0 ? `(${sel} selected)` : '';
+}
+
+function updateStatusBar() {
+  if (!state.activeFile) return;
+  const fd = FS.files[state.activeFile];
+  if (!fd) return;
+  $('sb-lang').textContent = fd.lang;
+}
+
+// ── BREADCRUMB ───────────────────────────────────
+function updateBreadcrumb(fname) {
+  const parts = fname.split('/');
+  const display = parts.map((p, i) => {
+    const isLast = i === parts.length - 1;
+    return `${i > 0 ? '<span class="bc-sep">›</span>' : ''}
+            <span class="bc-item ${isLast ? 'bc-last' : ''}">${p}</span>`;
+  }).join('');
+  breadcrumb.innerHTML = `
+    <span class="bc-item">my-project</span>
+    <span class="bc-sep">›</span>
+    ${display}`;
+}
+
+// ── SAVE ─────────────────────────────────────────
+function saveFile() {
+  if (!state.activeFile) return;
+  FS.files[state.activeFile].content = codeEditor.value;
+  FS.files[state.activeFile].modified = false;
+  renderTabs();
+  buildTree();
+  addTermLine('dim', `[${timeStr()}] File saved: ${state.activeFile}`);
+  notify('info','','File saved', 1500);
+}
+
+function saveAll() {
+  state.openTabs.forEach(f => { FS.files[f].modified = false; });
+  renderTabs();
+  buildTree();
+  notify('info','','All files saved', 1500);
+}
+
+function revertFile() {
+  if (!state.activeFile) return;
+  codeEditor.value = FS.files[state.activeFile].content;
+  FS.files[state.activeFile].modified = false;
+  renderTabs();
+  buildTree();
+  notify('info','','File reverted');
+}
+
+function saveAs() {
+  const name = prompt('Save as:', state.activeFile || 'untitled.js');
+  if (!name) return;
+  FS.files[name] = { ...FS.files[state.activeFile], content: codeEditor.value, modified: false };
+  if (!state.openTabs.includes(name)) state.openTabs.push(name);
+  state.activeFile = name;
+  renderTabs();
+  buildTree();
+  notify('info','', `Saved as ${name}`);
+}
+
+// ── NEW / OPEN FILE ───────────────────────────────
+function newFile(name) {
+  const fname = name || prompt('New file name:', 'untitled.js');
+  if (!fname) return;
+  const ext = fname.split('.').pop();
+  const langMap = { js:'JavaScript', ts:'TypeScript', css:'CSS', html:'HTML', json:'JSON', md:'Markdown', py:'Python', txt:'Text' };
+  const iconMap = { js:'📄', ts:'💙', css:'🎨', html:'🌐', json:'📦', md:'📋', py:'🐍', txt:'📝' };
+  FS.files[fname] = {
+    content: `// ${fname} — Created by MONTOO\n`,
+    lang: langMap[ext] || 'Text',
+    icon: iconMap[ext] || '📄',
+    modified: false,
+    folder: 'root',
+  };
+  openFileByName(fname);
+}
+
+function newFolder() {
+  const name = prompt('New folder name:', 'src');
+  if (name) notify('info','','Folder created: ' + name);
+}
+
+function openFile() { notify('info','Open','Use the file tree on the left to open files.'); }
+function openFolder() { notify('info','Open Folder','Drag & drop a folder to open it.'); }
+
+// ── EDIT OPERATIONS ───────────────────────────────
+function edUndo() { codeEditor.focus(); document.execCommand('undo'); }
+function edRedo() { codeEditor.focus(); document.execCommand('redo'); }
+function edCut() { codeEditor.focus(); document.execCommand('cut'); }
+function edCopy() { codeEditor.focus(); document.execCommand('copy'); }
+function edPaste() { codeEditor.focus(); document.execCommand('paste'); }
+function selectAll() { codeEditor.focus(); codeEditor.select(); }
+
+function toggleComment() {
+  const ta = codeEditor;
+  const s = ta.selectionStart, e = ta.selectionEnd;
+  const text = ta.value;
+  const lineStart = text.lastIndexOf('\n', s - 1) + 1;
+  const lineEnd = text.indexOf('\n', e);
+  const line = text.slice(lineStart, lineEnd === -1 ? undefined : lineEnd);
+  const fd = state.activeFile ? FS.files[state.activeFile] : null;
+  const prefix = fd && fd.lang === 'HTML' ? '<!-- ' : fd && fd.lang === 'CSS' ? '/* ' : '// ';
+  const suffix = fd && fd.lang === 'HTML' ? ' -->' : fd && fd.lang === 'CSS' ? ' */' : '';
+  let newLine;
+  if (line.trimStart().startsWith(prefix.trim())) {
+    newLine = line.replace(prefix.trim(), '').replace(suffix.trim(), '');
+  } else {
+    newLine = prefix + line + suffix;
+  }
+  ta.value = text.slice(0, lineStart) + newLine + text.slice(lineEnd === -1 ? text.length : lineEnd);
+  ta.selectionStart = s;
+  ta.selectionEnd = e + (newLine.length - line.length);
+  ta.dispatchEvent(new Event('input'));
+}
+
+function formatDoc() {
+  const ta = codeEditor;
+  const lines = ta.value.split('\n');
+  let indent = 0;
+  const formatted = lines.map(line => {
+    const trimmed = line.trim();
+    if (!trimmed) return '';
+    if (/^[}\])]/.test(trimmed)) indent = Math.max(0, indent - 1);
+    const out = '    '.repeat(indent) + trimmed;
+    if (/[{(\[]$/.test(trimmed)) indent++;
+    return out;
+  });
+  ta.value = formatted.join('\n');
+  ta.dispatchEvent(new Event('input'));
+  notify('info','','Document formatted');
+}
+
+function sortLines() {
+  const ta = codeEditor;
+  const lines = ta.value.split('\n');
+  ta.value = lines.sort((a, b) => a.localeCompare(b)).join('\n');
+  ta.dispatchEvent(new Event('input'));
+}
+
+function moveLineUp() {
+  const ta = codeEditor;
+  const s = ta.selectionStart;
+  const lines = ta.value.split('\n');
+  const cur = ta.value.slice(0, s).split('\n');
+  const idx = cur.length - 1;
+  if (idx === 0) return;
+  [lines[idx-1], lines[idx]] = [lines[idx], lines[idx-1]];
+  ta.value = lines.join('\n');
+  ta.selectionStart = ta.selectionEnd = s - lines[idx].length - 1;
+  ta.dispatchEvent(new Event('input'));
+}
+
+function moveLineDown() {
+  const ta = codeEditor;
+  const s = ta.selectionStart;
+  const lines = ta.value.split('\n');
+  const cur = ta.value.slice(0, s).split('\n');
+  const idx = cur.length - 1;
+  if (idx >= lines.length - 1) return;
+  [lines[idx], lines[idx+1]] = [lines[idx+1], lines[idx]];
+  ta.value = lines.join('\n');
+  ta.selectionStart = ta.selectionEnd = s + lines[idx+1].length + 1;
+  ta.dispatchEvent(new Event('input'));
+}
+
+function selectNextOccurrence() {
+  const ta = codeEditor;
+  const sel = ta.value.slice(ta.selectionStart, ta.selectionEnd);
+  if (!sel) return;
+  const idx = ta.value.indexOf(sel, ta.selectionEnd);
+  if (idx === -1) return;
+  ta.selectionStart = idx;
+  ta.selectionEnd = idx + sel.length;
+}
+
+function expandSelection() { codeEditor.focus(); }
+
+function addCursorAbove() { notify('info','','Multi-cursor: Ctrl+Click in editor to place cursors'); }
+function addCursorBelow() { notify('info','','Multi-cursor: Ctrl+Click in editor to place cursors'); }
+
+// ── FIND / REPLACE ────────────────────────────────
+const findOpts = state.findOpts;
+let findMatches = [], findIdx = 0;
+
+function showFind() {
+  findWidget.classList.add('show');
+  $('replaceRow').style.display = 'none';
+  $('findInp').focus();
+  $('findInp').select();
+}
+
+function showReplace() {
+  findWidget.classList.add('show');
+  $('replaceRow').style.display = '';
+  $('findInp').focus();
+}
+
+function closeFind() {
+  findWidget.classList.remove('show');
+  findMatches = [];
+  $('findCount').textContent = '';
+}
+
+function toggleFindOpt(opt) {
+  findOpts[opt] = !findOpts[opt];
+  const el = $('ft-' + opt);
+  el.classList.toggle('on', findOpts[opt]);
+  execFind();
+}
+
+function execFind() {
+  const q = $('findInp').value;
+  if (!q) { $('findCount').textContent = ''; findMatches = []; return; }
+  const text = codeEditor.value;
+  findMatches = [];
+  try {
+    let flags = 'g' + (findOpts.case ? '' : 'i');
+    let pattern = findOpts.regex ? q : q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+    if (findOpts.word) pattern = `\\b${pattern}\\b`;
+    const rx = new RegExp(pattern, flags);
+    let m;
+    while ((m = rx.exec(text)) !== null) {
+      findMatches.push({ s: m.index, e: m.index + m[0].length });
+    }
+  } catch(e) { $('findCount').textContent = 'Invalid regex'; return; }
+  $('findCount').textContent = findMatches.length ? `${Math.min(findIdx+1, findMatches.length)} of ${findMatches.length}` : 'No results';
+  if (findMatches.length) findNext();
+}
+
+function findNext() {
+  if (!findMatches.length) return;
+  findIdx = (findIdx + 1) % findMatches.length;
+  const m = findMatches[findIdx];
+  codeEditor.focus();
+  codeEditor.setSelectionRange(m.s, m.e);
+  scrollToSelection();
+  $('findCount').textContent = `${findIdx+1} of ${findMatches.length}`;
+}
+
+function findPrev() {
+  if (!findMatches.length) return;
+  findIdx = (findIdx - 1 + findMatches.length) % findMatches.length;
+  const m = findMatches[findIdx];
+  codeEditor.focus();
+  codeEditor.setSelectionRange(m.s, m.e);
+  scrollToSelection();
+  $('findCount').textContent = `${findIdx+1} of ${findMatches.length}`;
+}
+
+function replaceCurrent() {
+  const rep = $('replaceInp').value;
+  if (!findMatches.length) return;
+  const m = findMatches[findIdx];
+  const text = codeEditor.value;
+  codeEditor.value = text.slice(0, m.s) + rep + text.slice(m.e);
+  codeEditor.dispatchEvent(new Event('input'));
+  execFind();
+}
+
+function replaceAllInEditor() {
+  const q = $('findInp').value;
+  const rep = $('replaceInp').value;
+  if (!q) return;
+  try {
+    let flags = 'g' + (findOpts.case ? '' : 'i');
+    let pattern = findOpts.regex ? q : q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+    const rx = new RegExp(pattern, flags);
+    const count = (codeEditor.value.match(rx) || []).length;
+    codeEditor.value = codeEditor.value.replace(rx, rep);
+    codeEditor.dispatchEvent(new Event('input'));
+    notify('info','','Replaced ' + count + ' occurrence(s)');
+    closeFind();
+  } catch(e) {}
+}
+
+function scrollToSelection() {
+  const lineH = state.fontSize * 1.5;
+  const lineNum = codeEditor.value.slice(0, codeEditor.selectionStart).split('\n').length;
+  codeWrap.scrollTop = Math.max(0, (lineNum - 5) * lineH);
+}
+
+// ── GLOBAL SEARCH ─────────────────────────────────
+function globalSearchExec() {
+  const q = $('globalSearch').value.trim();
+  const results = $('globalResults');
+  const countEl = $('gs-count');
+  if (!q) { results.innerHTML = ''; countEl.textContent = ''; return; }
+
+  let total = 0;
+  let html = '';
+  Object.entries(FS.files).forEach(([fname, fd]) => {
+    const lines = fd.content.split('\n');
+    const matches = [];
+    lines.forEach((line, i) => {
+      let test = false;
+      try {
+        const rx = new RegExp(q, state.gsOpts.case ? 'g' : 'gi');
+        test = rx.test(line);
+      } catch(e) { test = line.includes(q); }
+      if (test) matches.push({ ln: i+1, text: line.trim() });
+    });
+    if (matches.length) {
+      total += matches.length;
+      html += `<div class="sr-file" onclick="openFileByName('${fname}')">📄 ${fname} <span style="font-size:10px;color:var(--sidebar-muted);font-weight:400;">(${matches.length})</span></div>`;
+      matches.forEach(m => {
+        const hl = m.text.replace(new RegExp(`(${q})`, 'gi'), '<span class="sr-hl">$1</span>');
+        html += `<div class="sr-match" onclick="openFileByName('${fname}')"><span class="sr-line-num">${m.ln}</span><span class="sr-text">${hl}</span></div>`;
+      });
+    }
+  });
+
+  countEl.textContent = total ? `${total} result(s) in files` : 'No results';
+  results.innerHTML = html;
+}
+
+function toggleGSOption(opt) {
+  state.gsOpts[opt] = !state.gsOpts[opt];
+  $('gs-' + opt).classList.toggle('on', state.gsOpts[opt]);
+  globalSearchExec();
+}
+
+function findInFiles() {
+  switchActivity('search', document.querySelector('[data-panel="search"]'));
+  $('globalSearch').focus();
+}
+
+function replaceAll() {
+  const q = $('globalSearch').value;
+  const rep = $('globalReplace').value;
+  if (!q) return;
+  let count = 0;
+  Object.values(FS.files).forEach(fd => {
+    const prev = fd.content;
+    fd.content = fd.content.split(q).join(rep);
+    if (fd.content !== prev) count++;
+  });
+  notify('info','Replace', `Replaced in ${count} file(s)`);
+  globalSearchExec();
+}
+
+// ── GO TO LINE ────────────────────────────────────
+function showGoto() {
+  showOverlay();
+  $('gotoWidget').classList.add('show');
+  const cur = codeEditor.value.slice(0, codeEditor.selectionStart).split('\n').length;
+  $('gotoInp').value = `:${cur}`;
+  $('gotoInp').focus();
+  $('gotoInp').select();
+}
+
+function gotoKey(e) {
+  if (e.key === 'Escape') { closeAllOverlays(); return; }
+  if (e.key === 'Enter') {
+    const v = $('gotoInp').value.replace(':','').trim();
+    const ln = parseInt(v);
+    if (!isNaN(ln)) {
+      const lines = codeEditor.value.split('\n');
+      const target = Math.max(1, Math.min(ln, lines.length));
+      const pos = lines.slice(0, target - 1).join('\n').length + (target > 1 ? 1 : 0);
+      codeEditor.focus();
+      codeEditor.setSelectionRange(pos, pos + lines[target-1].length);
+      const lineH = state.fontSize * 1.5;
+      codeWrap.scrollTop = Math.max(0, (target - 5) * lineH);
+    }
+    closeAllOverlays();
+  }
+}
+
+// ── COMMAND PALETTE ───────────────────────────────
+const commands = [
+  { name:'File: New File', key:'Ctrl+N', fn: newFile },
+  { name:'File: Open File', key:'Ctrl+O', fn: openFile },
+  { name:'File: Save', key:'Ctrl+S', fn: saveFile },
+  { name:'File: Save All', key:'Ctrl+K S', fn: saveAll },
+  { name:'File: Close Editor', key:'Ctrl+W', fn: closeTab },
+  { name:'File: Revert File', fn: revertFile },
+  { name:'Edit: Find', key:'Ctrl+F', fn: showFind },
+  { name:'Edit: Replace', key:'Ctrl+H', fn: showReplace },
+  { name:'Edit: Find in Files', key:'Ctrl+Shift+F', fn: findInFiles },
+  { name:'Edit: Toggle Comment', key:'Ctrl+/', fn: toggleComment },
+  { name:'Edit: Format Document', key:'Shift+Alt+F', fn: formatDoc },
+  { name:'Edit: Select All', key:'Ctrl+A', fn: selectAll },
+  { name:'Edit: Sort Lines', fn: sortLines },
+  { name:'View: Toggle Sidebar', key:'Ctrl+B', fn: toggleSidebar },
+  { name:'View: Toggle Minimap', fn: toggleMinimap },
+  { name:'View: Toggle Word Wrap', key:'Alt+Z', fn: toggleWordWrap },
+  { name:'View: Toggle Panel', key:'Ctrl+J', fn: togglePanel },
+  { name:'View: Split Editor', key:'Ctrl+\\', fn: splitEditor },
+  { name:'View: Zoom In', key:'Ctrl+=', fn: zoomIn },
+  { name:'View: Zoom Out', key:'Ctrl+-', fn: zoomOut },
+  { name:'View: Reset Zoom', key:'Ctrl+0', fn: resetZoom },
+  { name:'View: Toggle Theme', fn: toggleTheme },
+  { name:'View: Toggle Zen Mode', fn: toggleZen },
+  { name:'Go: Go to Line', key:'Ctrl+G', fn: showGoto },
+  { name:'Go: Quick Open File', key:'Ctrl+P', fn: quickOpen },
+  { name:'Run: Run Code', key:'Ctrl+F5', fn: runCode },
+  { name:'Run: Debug', key:'F5', fn: debugCode },
+  { name:'Terminal: New Terminal', key:'Ctrl+`', fn: newTerminal },
+  { name:'Terminal: Split Terminal', fn: splitTerminal },
+  { name:'Terminal: Clear Terminal', fn: clearTerminal },
+  { name:'Preferences: Color Theme', fn: toggleTheme },
+  { name:'Preferences: Settings', fn: () => switchActivity('settings', q('[data-panel="settings"]')) },
+  { name:'Help: Keyboard Shortcuts', fn: showShortcuts },
+  { name:'Help: About CEWCMM', fn: () => notify('info','CEWCMM','v1.0.0 · by MONTOO') },
+  { name:'Git: Commit', fn: () => switchActivity('git', q('[data-panel="git"]')) },
+  { name:'Git: Push', fn: () => { notify('success','Git','Pushed to origin/main'); addTermLine('ok','$ git push origin main\nBranch pushed successfully.'); } },
+  { name:'Git: Pull', fn: () => { notify('success','Git','Pulled from origin/main'); } },
+  { name:'Git: Stash', fn: () => notify('info','Git','Changes stashed') },
+  { name:'Extensions: Show Marketplace', fn: () => switchActivity('ext', q('[data-panel="ext"]')) },
+  { name:'Extensions: Show Installed', fn: () => switchActivity('ext', q('[data-panel="ext"]')) },
+  { name:'Developer: Reload Window', fn: () => location.reload() },
+  { name:'Developer: Toggle DevTools', fn: () => notify('info','DevTools','Press F12 to open browser DevTools') },
+];
+
+function showPalette(prefix) {
+  showOverlay();
+  $('palette').classList.add('show');
+  $('paletteInput').value = prefix || '';
+  $('paletteInput').focus();
+  filterPalette(prefix || '');
+}
+
+function filterPalette(q) {
+  const list = $('paletteList');
+  const filtered = q ? commands.filter(c => c.name.toLowerCase().includes(q.toLowerCase())) : commands;
+  list.innerHTML = filtered.map((c, i) => `
+    <div class="pal-item ${i === 0 ? 'focused' : ''}" onclick="execCommand(${commands.indexOf(c)})">
+      <div><div class="pal-name">${c.name}</div></div>
+      ${c.key ? `<span class="pal-key">${c.key}</span>` : ''}
+    </div>`).join('');
+  state.paletteFocusIdx = 0;
+}
+
+function execCommand(idx) {
+  closeAllOverlays();
+  if (commands[idx]) commands[idx].fn();
+}
+
+function paletteKey(e) {
+  const items = $('paletteList').querySelectorAll('.pal-item');
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    state.paletteFocusIdx = Math.min(state.paletteFocusIdx + 1, items.length - 1);
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    state.paletteFocusIdx = Math.max(state.paletteFocusIdx - 1, 0);
+  } else if (e.key === 'Enter') {
+    const q = $('paletteInput').value;
+    const filtered = q ? commands.filter(c => c.name.toLowerCase().includes(q.toLowerCase())) : commands;
+    closeAllOverlays();
+    if (filtered[state.paletteFocusIdx]) filtered[state.paletteFocusIdx].fn();
+    return;
+  } else if (e.key === 'Escape') { closeAllOverlays(); return; }
+  items.forEach((el,i) => el.classList.toggle('focused', i === state.paletteFocusIdx));
+  items[state.paletteFocusIdx]?.scrollIntoView({ block:'nearest' });
+}
+
+function quickOpen() {
+  showOverlay();
+  $('palette').classList.add('show');
+  $('paletteInput').value = '';
+  $('paletteInput').placeholder = 'Type a file name...';
+  const list = $('paletteList');
+  list.innerHTML = Object.keys(FS.files).map(f => `
+    <div class="pal-item" onclick="openFileByName('${f}');closeAllOverlays()">
+      <div class="pal-name">${FS.files[f].icon} ${f}</div>
+      <span class="pal-key">${FS.files[f].lang}</span>
+    </div>`).join('');
+  $('paletteInput').oninput = function() {
+    const q = this.value.toLowerCase();
+    list.innerHTML = Object.keys(FS.files).filter(f => f.includes(q)).map(f => `
+      <div class="pal-item" onclick="openFileByName('${f}');closeAllOverlays()">
+        <div class="pal-name">${FS.files[f].icon} ${f}</div>
+        <span class="pal-key">${FS.files[f].lang}</span>
+      </div>`).join('');
+  };
+}
+
+function showSymbols() {
+  showPalette('@');
+}
+
+// ── KEYBOARD SHORTCUTS PANEL ──────────────────────
+const shortcutDefs = [
+  { action:'Command Palette',    key:'Ctrl+Shift+P' },
+  { action:'Quick Open',         key:'Ctrl+P' },
+  { action:'New File',           key:'Ctrl+N' },
+  { action:'Open File',          key:'Ctrl+O' },
+  { action:'Save',               key:'Ctrl+S' },
+  { action:'Save All',           key:'Ctrl+K S' },
+  { action:'Close Editor',       key:'Ctrl+W' },
+  { action:'Find',               key:'Ctrl+F' },
+  { action:'Replace',            key:'Ctrl+H' },
+  { action:'Find in Files',      key:'Ctrl+Shift+F' },
+  { action:'Go to Line',         key:'Ctrl+G' },
+  { action:'Toggle Sidebar',     key:'Ctrl+B' },
+  { action:'Toggle Panel',       key:'Ctrl+J' },
+  { action:'Toggle Word Wrap',   key:'Alt+Z' },
+  { action:'Split Editor',       key:'Ctrl+\\' },
+  { action:'Zoom In',            key:'Ctrl+=' },
+  { action:'Zoom Out',           key:'Ctrl+-' },
+  { action:'Reset Zoom',         key:'Ctrl+0' },
+  { action:'Run Code',           key:'Ctrl+F5' },
+  { action:'Debug',              key:'F5' },
+  { action:'Format Document',    key:'Shift+Alt+F' },
+  { action:'Toggle Comment',     key:'Ctrl+/' },
+  { action:'Select Next',        key:'Ctrl+D' },
+  { action:'Undo',               key:'Ctrl+Z' },
+  { action:'Redo',               key:'Ctrl+Y' },
+  { action:'Move Line Up',       key:'Alt+↑' },
+  { action:'Move Line Down',     key:'Alt+↓' },
+  { action:'New Terminal',       key:'Ctrl+`' },
+  { action:'Rename',             key:'F2' },
+  { action:'Delete',             key:'Delete' },
+];
+
+function showShortcuts() {
+  showOverlay();
+  $('shortcutsPanel').classList.add('show');
+  filterShortcuts('');
+}
+
+function filterShortcuts(q) {
+  const list = $('shortcutsList');
+  const filtered = q ? shortcutDefs.filter(s => s.action.toLowerCase().includes(q.toLowerCase()) || s.key.toLowerCase().includes(q.toLowerCase())) : shortcutDefs;
+  list.innerHTML = filtered.map(s => `
+    <div class="pal-item" style="cursor:default;">
+      <div class="pal-name">${s.action}</div>
+      <span class="pal-key" style="font-family:'Consolas',monospace;background:rgba(255,255,255,0.08);padding:2px 8px;border-radius:3px;">${s.key}</span>
+    </div>`).join('');
+}
+
+// ── RUN CODE ─────────────────────────────────────
+function runCode() {
+  switchPanelTab('terminal', q('[data-tab="terminal"]'));
+  if (!state.panelOpen) togglePanel();
+  const code = state.activeFile ? (codeEditor.value || '') : '';
+  const fname = state.activeFile || 'untitled';
+
+  addTermLine('dim', '');
+  addTermLine('dim', `$ node ${fname}`);
+
+  const log = [], origLog = console.log, origErr = console.error, origWarn = console.warn, origInfo = console.info;
+  console.log  = (...a) => log.push({t:'ok',   m: a.map(v => typeof v==='object'?JSON.stringify(v,null,2):String(v)).join(' ')});
+  console.error= (...a) => log.push({t:'err',  m: a.map(String).join(' ')});
+  console.warn = (...a) => log.push({t:'warn', m: a.map(String).join(' ')});
+  console.info = (...a) => log.push({t:'info', m: a.map(String).join(' ')});
+
+  try {
+    eval(code);
+    log.forEach(l => addTermLine(l.t, l.m));
+    addTermLine('ok', 'Process exited with code 0');
+  } catch(err) {
+    log.forEach(l => addTermLine(l.t, l.m));
+    addTermLine('err', err.toString());
+    addTermLine('err', 'Process exited with code 1');
+    addProblem('error', fname, err.message, 1);
+  }
+  console.log=origLog; console.error=origErr; console.warn=origWarn; console.info=origInfo;
+}
+
+function runSelectedText() {
+  const sel = codeEditor.value.slice(codeEditor.selectionStart, codeEditor.selectionEnd);
+  if (!sel) { notify('warn','','No text selected'); return; }
+  switchPanelTab('terminal', q('[data-tab="terminal"]'));
+  if (!state.panelOpen) togglePanel();
+  addTermLine('dim', '$ [Running selected text]');
+  try {
+    const result = eval(sel);
+    if (result !== undefined) addTermLine('ok', String(result));
+    addTermLine('ok','Done.');
+  } catch(e) {
+    addTermLine('err', e.toString());
+  }
+}
+
+function debugCode() {
+  notify('info','Debug','Debugger simulation: Setting up breakpoints...');
+  setTimeout(() => addTermLine('info', '[Debugger] Attached to process'), 500);
+  setTimeout(() => addTermLine('info', '[Debugger] Paused at breakpoint on Ln 1'), 1000);
+}
+
+function addBreakpoint() { notify('info','Debug','Breakpoint toggled on current line'); }
+
+// ── LINT ─────────────────────────────────────────
+function lintCode() {
+  state.problems = [];
+  if (!state.activeFile) return;
+  const fd = FS.files[state.activeFile];
+  if (!fd || fd.lang !== 'JavaScript') return;
+  const lines = codeEditor.value.split('\n');
+  lines.forEach((line, i) => {
+    if (line.includes('console.log') && !line.trim().startsWith('//'))
+      state.problems.push({ sev:'warn', file: state.activeFile, msg:'Unexpected console.log', ln: i+1 });
+    if (line.includes('var '))
+      state.problems.push({ sev:'warn', file: state.activeFile, msg:"Prefer 'const' or 'let' over 'var'", ln: i+1 });
+    if (/==(?!=)/.test(line) && !line.trim().startsWith('//'))
+      state.problems.push({ sev:'info', file: state.activeFile, msg:"Use '===' instead of '=='", ln: i+1 });
+  });
+  renderProblems();
+}
+
+function addProblem(sev, file, msg, ln) {
+  state.problems.push({ sev, file, msg, ln });
+  renderProblems();
+}
+
+function renderProblems() {
+  const errs = state.problems.filter(p => p.sev === 'error').length;
+  const warns = state.problems.filter(p => p.sev === 'warn').length;
+  $('sb-errors').textContent = `⊗ ${errs} ⚠ ${warns}`;
+  $('sb-errors').className = 'sb-item' + (errs ? ' err' : '');
+
+  const list = $('problemsList');
+  if (!state.problems.length) {
+    list.innerHTML = `<div style="padding:12px 16px;font-size:12px;color:var(--sidebar-muted);">No problems detected.</div>`;
+    return;
+  }
+  list.innerHTML = state.problems.map(p => `
+    <div class="problem-item" onclick="openFileByName('${p.file}');showGotoLine(${p.ln})">
+      <span class="problem-icon">${p.sev==='error'?'⊗':p.sev==='warn'?'⚠':'ℹ'}</span>
+      <div>
+        <span class="problem-msg" style="color:${p.sev==='error'?'#f48771':p.sev==='warn'?'#cca700':'#569cd6'}">${p.msg}</span>
+        <span class="problem-file" style="margin-left:8px;font-size:11px;color:var(--sidebar-muted)">${p.file}:${p.ln}</span>
+      </div>
+    </div>`).join('');
+}
+
+function showGotoLine(ln) {
+  setTimeout(() => {
+    const lines = codeEditor.value.split('\n');
+    const target = Math.max(1, Math.min(ln, lines.length));
+    const pos = lines.slice(0, target - 1).join('\n').length + (target > 1 ? 1 : 0);
+    codeEditor.setSelectionRange(pos, pos + lines[target-1].length);
+    codeWrap.scrollTop = Math.max(0, (target - 5) * 20);
+  }, 100);
+}
+
+// ── AUTO COMPLETE (basic) ─────────────────────────
+const acItems = ['console','document','window','function','return','const','let','var','class','extends','import','export','default','async','await','Promise','Array','Object','String','Number','Boolean','Math','Date','JSON','Error','fetch','map','filter','reduce','forEach','push','pop','shift','unshift','splice','slice','join','split','trim','includes','indexOf','replace','toString','length'];
+
+let acEl = null;
+function autoComplete() {
+  if (acEl) { acEl.remove(); acEl = null; }
+  const ta = codeEditor;
+  const s = ta.selectionStart;
+  if (ta.selectionStart !== ta.selectionEnd) return;
+  const text = ta.value.slice(0, s);
+  const word = text.match(/[\w.]+$/);
+  if (!word || word[0].length < 2) return;
+  const q = word[0].toLowerCase();
+  const matches = acItems.filter(i => i.toLowerCase().startsWith(q) && i !== word[0]);
+  if (!matches.length) return;
+
+  const coords = getCaretCoords(ta, s);
+  const div = document.createElement('div');
+  div.style.cssText = `position:absolute;top:${coords.top + 18}px;left:${coords.left}px;
+    background:var(--dropdown-bg);border:1px solid var(--dropdown-border);
+    border-radius:4px;z-index:200;max-height:120px;overflow-y:auto;
+    box-shadow:0 4px 12px rgba(0,0,0,0.4);min-width:120px;`;
+  matches.slice(0, 8).forEach(m => {
+    const item = document.createElement('div');
+    item.style.cssText = 'padding:3px 10px;font-size:12px;cursor:pointer;font-family:Consolas,monospace;color:var(--sidebar-text);';
+    item.textContent = m;
+    item.onmouseenter = () => item.style.background = 'var(--sidebar-active)';
+    item.onmouseleave = () => item.style.background = '';
+    item.onmousedown = (e) => {
+      e.preventDefault();
+      const before = text.slice(0, s - word[0].length);
+      ta.value = before + m + ta.value.slice(s);
+      ta.selectionStart = ta.selectionEnd = before.length + m.length;
+      if (acEl) { acEl.remove(); acEl = null; }
+      ta.dispatchEvent(new Event('input'));
+    };
+    div.appendChild(item);
+  });
+  codeWrap.style.position = 'relative';
+  codeWrap.appendChild(div);
+  acEl = div;
+}
+
+function getCaretCoords(ta, pos) {
+  const div = document.createElement('div');
+  const style = getComputedStyle(ta);
+  ['fontFamily','fontSize','fontWeight','letterSpacing','lineHeight','textIndent','paddingTop','paddingLeft'].forEach(p => { div.style[p] = style[p]; });
+  div.style.cssText += ';position:absolute;top:-9999px;white-space:pre-wrap;word-wrap:break-word;visibility:hidden;';
+  div.textContent = ta.value.slice(0, pos);
+  const span = document.createElement('span');
+  span.textContent = '|';
+  div.appendChild(span);
+  document.body.appendChild(div);
+  const rect = span.getBoundingClientRect();
+  const taRect = ta.getBoundingClientRect();
+  document.body.removeChild(div);
+  return { top: rect.top - taRect.top + ta.scrollTop, left: rect.left - taRect.left };
+}
+
+// Click outside autocomplete
+document.addEventListener('click', () => { if (acEl) { acEl.remove(); acEl = null; } });
+
+// ── TERMINAL ─────────────────────────────────────
+function initTerminal() {
+  terminal_el.innerHTML = '';
+  addTermLine('bold','CEWCMM Integrated Terminal');
+  addTermLine('dim','─────────────────────────────────────────────');
+  addTermLine('ok',`Welcome to CEWCMM — by MONTOO`);
+  addTermLine('info','Node.js v18.0.0 · npm v9.0.0');
+  addTermLine('dim','Type a command and press Enter, or press ▷ to run your file.');
+  addTermLine('dim','');
+}
+
+function addTermLine(cls, text) {
+  const div = document.createElement('div');
+  div.className = 'term-line term-' + cls;
+  div.textContent = text;
+  terminal_el.appendChild(div);
+  terminal_el.scrollTop = terminal_el.scrollHeight;
+}
+
+const builtinCmds = {
+  'clear':    () => { terminal_el.innerHTML = ''; },
+  'help':     () => { addTermLine('info','Available: clear, ls, echo, date, node [file], git status, git add, git commit, git log, npm install, whoami'); },
+  'ls':       () => { addTermLine('ok', Object.keys(FS.files).join('  ')); },
+  'date':     () => { addTermLine('ok', new Date().toString()); },
+  'whoami':   () => { addTermLine('ok', 'MONTOO'); },
+  'pwd':      () => { addTermLine('ok', '/home/montoo/my-project'); },
+  'node --version': () => addTermLine('ok','v18.0.0'),
+  'npm --version':  () => addTermLine('ok','9.0.0'),
+};
+
+function termKeyDown(e) {
+  if (e.key === 'Enter') {
+    const cmd = termInput.value.trim();
+    if (!cmd) return;
+    state.termHistory.unshift(cmd);
+    state.termHistIdx = -1;
+    termInput.value = '';
+
+    addTermLine('dim', `$ ${cmd}`);
+
+    if (builtinCmds[cmd]) { builtinCmds[cmd](); return; }
+
+    const parts = cmd.split(' ');
+    if (parts[0] === 'echo') { addTermLine('ok', parts.slice(1).join(' ')); }
+    else if (parts[0] === 'node' && parts[1]) {
+      const fname = parts[1];
+      if (FS.files[fname]) {
+        try { eval(FS.files[fname].content); addTermLine('ok','Process exited with code 0'); }
+        catch(e) { addTermLine('err', e.toString()); }
+      } else addTermLine('err', `Cannot find module '${fname}'`);
+    }
+    else if (cmd.startsWith('git ')) {
+      const sub = parts[1];
+      if (sub === 'status') {
+        addTermLine('ok','On branch main\nYour branch is up to date.\n\nChanges not staged for commit:');
+        state.gitChanges.forEach(c => addTermLine('warn',`\t${c.status === 'M' ? 'modified' : c.status === 'U' ? 'new file' : 'deleted'}:\t${c.file}`));
+      } else if (sub === 'add') addTermLine('ok','Changes staged');
+      else if (sub === 'commit') addTermLine('ok','[main abc1234] ' + (parts.slice(2).join(' ') || 'Update'));
+      else if (sub === 'log') addTermLine('ok','commit abc1234 (HEAD -> main)\nAuthor: MONTOO <montoo@cewcmm.dev>\nDate:   ' + new Date().toDateString() + '\n\n    Initial commit');
+      else if (sub === 'push') addTermLine('ok','Everything up-to-date');
+      else if (sub === 'pull') addTermLine('ok','Already up to date.');
+      else if (sub === 'stash') addTermLine('ok','Saved working directory and index state WIP on main');
+      else addTermLine('err',`git: '${sub}' is not a git command`);
+    }
+    else if (cmd.startsWith('npm ')) {
+      const sub = parts[1];
+      if (sub === 'install') { addTermLine('info','Installing packages...'); setTimeout(() => addTermLine('ok','Added 42 packages in 2.3s'), 500); }
+      else if (sub === 'start') { addTermLine('ok','> cewcmm@1.0.0 start\n> node index.js'); runCode(); }
+      else if (sub === 'run') addTermLine('info',`> Running script: ${parts[2] || ''}`);
+      else addTermLine('err',`Unknown npm command: ${sub}`);
+    }
+    else if (parts[0] === 'cd') addTermLine('dim',`/home/montoo/my-project/${parts[1] || ''}`);
+    else if (parts[0] === 'mkdir') addTermLine('ok',`Directory created: ${parts[1]}`);
+    else if (parts[0] === 'touch') { if(parts[1]) { newFile(parts[1]); addTermLine('ok',`Created ${parts[1]}`); } }
+    else if (parts[0] === 'cat') {
+      if (parts[1] && FS.files[parts[1]]) addTermLine('dim', FS.files[parts[1]].content.slice(0,500));
+      else addTermLine('err', `cat: ${parts[1]}: No such file or directory`);
+    }
+    else addTermLine('err', `command not found: ${parts[0]}`);
+  }
+  else if (e.key === 'ArrowUp') {
+    state.termHistIdx = Math.min(state.termHistIdx + 1, state.termHistory.length - 1);
+    termInput.value = state.termHistory[state.termHistIdx] || '';
+  }
+  else if (e.key === 'ArrowDown') {
+    state.termHistIdx = Math.max(state.termHistIdx - 1, -1);
+    termInput.value = state.termHistIdx >= 0 ? state.termHistory[state.termHistIdx] : '';
+  }
+}
+
+function newTerminal() {
+  const id = state.terminals.length + 1;
+  state.terminals.push({ id, name: 'bash' });
+  state.activeTermId = id;
+  const tabs = $('termTabs');
+  const newTab = document.createElement('div');
+  newTab.className = 'term-tab active';
+  newTab.id = 'tt-' + id;
+  newTab.textContent = `bash ${id} ×`;
+  newTab.onclick = () => { qa('.term-tab').forEach(t => t.classList.remove('active')); newTab.classList.add('active'); };
+  tabs.insertBefore(newTab, tabs.querySelector('.term-tab-add'));
+  qa('.term-tab:not(.term-tab-add)').forEach(t => t.classList.remove('active'));
+  newTab.classList.add('active');
+  terminal_el.innerHTML = '';
+  addTermLine('ok', `Terminal ${id} opened`);
+  notify('info','','New terminal opened');
+}
+
+function splitTerminal() { notify('info','Terminal','Split terminal: feature preview'); }
+function clearTerminal() { terminal_el.innerHTML = ''; initTerminal(); }
+function killTerminal() { terminal_el.innerHTML = ''; addTermLine('dim','[Terminal process killed]'); }
+
+// ── GIT PANEL ────────────────────────────────────
+function renderGitPanel() {
+  const panel = $('gitPanel');
+  panel.innerHTML = `
+    <div class="git-commit-area">
+      <textarea class="git-msg" id="gitMsg" placeholder="Message (Ctrl+Enter to commit)"></textarea>
+      <div style="display:flex;gap:4px;">
+        <button class="git-commit-btn" style="flex:1;" onclick="gitCommit()">✓ Commit</button>
+        <button class="git-commit-btn" style="background:none;border:1px solid var(--input-border);color:var(--sidebar-text);" onclick="gitSync()">⟳ Sync</button>
+      </div>
+    </div>
+    <div class="git-section">Staged Changes</div>
+    <div id="staged"></div>
+    <div class="git-section" style="margin-top:8px;">Changes</div>
+    <div id="unstaged"></div>
+  `;
+  const staged = $('staged');
+  const unstaged = $('unstaged');
+  staged.innerHTML = `<div style="padding:4px 8px;font-size:12px;color:var(--sidebar-muted);font-style:italic;">No staged changes</div>`;
+  state.gitChanges.forEach(c => {
+    const div = document.createElement('div');
+    div.className = 'git-file';
+    div.innerHTML = `
+      <span class="git-status ${c.status}">${c.status}</span>
+      <span style="flex:1;font-size:12px;">${c.file}</span>
+      <div class="git-actions">
+        <button class="git-act-btn" onclick="gitStage('${c.file}')" title="Stage">+</button>
+        <button class="git-act-btn" onclick="gitRevert('${c.file}')" title="Revert">↩</button>
+        <button class="git-act-btn" onclick="openFileByName('${c.file}')" title="Open">→</button>
+      </div>`;
+    unstaged.appendChild(div);
+  });
+}
+
+function gitCommit() {
+  const msg = $('gitMsg').value.trim();
+  if (!msg) { notify('warn','Git','Please enter a commit message'); return; }
+  addTermLine('ok', `[main ${Math.random().toString(16).slice(2,9)}] ${msg}`);
+  state.gitChanges = [];
+  $('git-badge').style.display = 'none';
+  renderGitPanel();
+  notify('success','Git',`Committed: "${msg}"`);
+}
+
+function gitSync() {
+  addTermLine('info', '$ git fetch origin');
+  setTimeout(() => { addTermLine('ok', 'Already up to date.'); notify('info','Git','Repository synced'); }, 500);
+}
+
+function gitStage(file) { notify('info','Git', `Staged: ${file}`); }
+function gitRevert(file) {
+  if (FS.files[file]) { FS.files[file].modified = false; notify('warn','Git',`Reverted: ${file}`); buildTree(); renderTabs(); }
+}
+
+// ── EXTENSIONS ───────────────────────────────────
+const extensions = [
+  { name:'Prettier', desc:'Code formatter', icon:'🟡', pub:'Prettier', stars:'★★★★★', installed:true },
+  { name:'ESLint', desc:'JavaScript linter', icon:'🔵', pub:'Microsoft', stars:'★★★★★', installed:true },
+  { name:'GitLens', desc:'Supercharge Git in VS Code', icon:'🔴', pub:'GitKraken', stars:'★★★★★', installed:false },
+  { name:'Auto Rename Tag', desc:'Auto rename paired HTML tags', icon:'🟢', pub:'formulahendry', stars:'★★★★☆', installed:false },
+  { name:'Path Intellisense', desc:'Autocompletes filenames', icon:'🟠', pub:'Christian Kohler', stars:'★★★★☆', installed:false },
+  { name:'Bracket Pair Colorizer', desc:'Colorizes matching brackets', icon:'🟣', pub:'CoenraadS', stars:'★★★★★', installed:true },
+  { name:'Live Server', desc:'Local development server', icon:'⚡', pub:'Ritwick Dey', stars:'★★★★★', installed:false },
+  { name:'Tailwind CSS IntelliSense', desc:'Tailwind CSS tooling', icon:'🌊', pub:'Tailwind Labs', stars:'★★★★★', installed:false },
+  { name:'TypeScript Importer', desc:'Auto import TS symbols', icon:'💙', pub:'pmneo', stars:'★★★★☆', installed:false },
+  { name:'REST Client', desc:'Send HTTP requests in VS Code', icon:'🔌', pub:'Huachao Mao', stars:'★★★★☆', installed:false },
+];
+
+function renderExtensions(list) {
+  $('extList').innerHTML = list.map((e, i) => `
+    <div class="ext-item">
+      <div class="ext-icon" style="background:rgba(255,255,255,0.05)">${e.icon}</div>
+      <div class="ext-info">
+        <div class="ext-name">${e.name}</div>
+        <div class="ext-desc">${e.desc}</div>
+        <div class="ext-meta">
+          <span class="ext-pub">${e.pub}</span>
+          <span class="ext-stars">${e.stars}</span>
+        </div>
+      </div>
+      <button class="ext-install-btn ${e.installed?'installed':''}" onclick="toggleExt(${i},this)">
+        ${e.installed?'⚙ Installed':'Install'}
+      </button>
+    </div>`).join('');
+}
+
+function filterExts(q) {
+  const filtered = q ? extensions.filter(e => e.name.toLowerCase().includes(q.toLowerCase()) || e.desc.toLowerCase().includes(q.toLowerCase())) : extensions;
+  renderExtensions(filtered);
+}
+
+function toggleExt(i, btn) {
+  extensions[i].installed = !extensions[i].installed;
+  btn.textContent = extensions[i].installed ? '⚙ Installed' : 'Install';
+  btn.className = 'ext-install-btn ' + (extensions[i].installed ? 'installed' : '');
+  if (extensions[i].installed) notify('success','Extensions',`${extensions[i].name} installed`);
+  else notify('info','Extensions',`${extensions[i].name} uninstalled`);
+}
+
+// ── SETTINGS ─────────────────────────────────────
+function showSettingsTab(tab, el) {
+  qa('.sn-item').forEach(i => i.classList.remove('active'));
+  el.classList.add('active');
+  openSettingsView();
+}
+
+function openSettingsView() {
+  state.openTabs.includes('⚙ Settings') || state.openTabs.push('⚙ Settings');
+  // For simplicity, just open settings notification
+  notify('info','Settings','Settings panel is in the sidebar → Click a setting category');
+}
+
+// ── ACTIVITY / SIDEBAR ────────────────────────────
+function switchActivity(panel, el) {
+  qa('.ab-item').forEach(i => i.classList.remove('active'));
+  if (el) el.classList.add('active');
+  const panels = ['explorer','search','git','run','ext','settings'];
+  panels.forEach(p => {
+    const el2 = $('panel-' + p);
+    if (el2) el2.style.display = p === panel ? 'flex' : 'none';
+  });
+  if (panel === 'git') renderGitPanel();
+  if (!state.sidebarOpen) { state.sidebarOpen = true; sidebar.classList.remove('collapsed'); }
+}
+
+function toggleSidebar() {
+  state.sidebarOpen = !state.sidebarOpen;
+  sidebar.classList.toggle('collapsed', !state.sidebarOpen);
+}
+
+// ── PANEL ─────────────────────────────────────────
+function togglePanel() {
+  state.panelOpen = !state.panelOpen;
+  bottomPanel.style.display = state.panelOpen ? '' : 'none';
+  if (state.panelOpen) termInput.focus();
+}
+
+function maximizePanel() {
+  bottomPanel.style.height = bottomPanel.style.height === '60vh' ? '220px' : '60vh';
+}
+
+function switchPanelTab(tab, el) {
+  qa('.ptab').forEach(t => t.classList.remove('active'));
+  if (el) el.classList.add('active');
+  ['terminal','problems','output','debug','ports'].forEach(t => {
+    const el2 = $('tab-' + t);
+    if (el2) el2.style.display = t === tab ? (t === 'terminal' ? 'flex' : 'block') : 'none';
+  });
+  if (!state.panelOpen) togglePanel();
+}
+
+// ── RESIZE ───────────────────────────────────────
+let resizing = null;
+function startResize(e, dir) {
+  resizing = { dir, startY: e.clientY, startH: bottomPanel.offsetHeight };
+  document.addEventListener('mousemove', doResize);
+  document.addEventListener('mouseup', stopResize);
+}
+
+function doResize(e) {
+  if (!resizing) return;
+  if (resizing.dir === 'h') {
+    const delta = resizing.startY - e.clientY;
+    const newH = Math.max(28, Math.min(window.innerHeight * 0.8, resizing.startH + delta));
+    bottomPanel.style.height = newH + 'px';
+    if (newH <= 28) { state.panelOpen = false; }
+    else { state.panelOpen = true; }
+  }
+}
+
+function stopResize() {
+  resizing = null;
+  document.removeEventListener('mousemove', doResize);
+  document.removeEventListener('mouseup', stopResize);
+}
+
+// ── MINIMAP ───────────────────────────────────────
+function toggleMinimap() {
+  state.minimapVisible = !state.minimapVisible;
+  minimap.style.display = state.minimapVisible ? '' : 'none';
+}
+
+// ── WORD WRAP ─────────────────────────────────────
+function toggleWordWrap() {
+  state.wordWrap = !state.wordWrap;
+  codeEditor.classList.toggle('wrap', state.wordWrap);
+  codeEditor.style.width = state.wordWrap ? '100%' : '';
+  notify('info','','Word wrap: ' + (state.wordWrap ? 'On' : 'Off'));
+}
+
+// ── ZOOM ─────────────────────────────────────────
+function zoomIn() { state.zoom = Math.min(2, state.zoom + 0.1); applyZoom(); }
+function zoomOut() { state.zoom = Math.max(0.5, state.zoom - 0.1); applyZoom(); }
+function resetZoom() { state.zoom = 1; applyZoom(); }
+function applyZoom() {
+  document.body.style.zoom = state.zoom;
+  notify('info','','Zoom: ' + Math.round(state.zoom * 100) + '%');
+}
+
+// ── THEME ────────────────────────────────────────
+function toggleTheme() {
+  document.body.classList.toggle('light');
+  const isDark = !document.body.classList.contains('light');
+  notify('info','Theme', isDark ? 'Dark+ activated' : 'Light+ activated');
+  setTimeout(updateMinimap, 100);
+}
+
+// ── ZEN MODE ─────────────────────────────────────
+let zenMode = false;
+function toggleZen() {
+  zenMode = !zenMode;
+  q('.titlebar').style.display = zenMode ? 'none' : '';
+  q('.actbar').style.display = zenMode ? 'none' : '';
+  sidebar.style.display = zenMode ? 'none' : '';
+  bottomPanel.style.display = zenMode ? 'none' : '';
+  q('.statusbar').style.display = zenMode ? 'none' : '';
+  if (!zenMode) {
+    q('.titlebar').style.display = '';
+    q('.actbar').style.display = '';
+    sidebar.style.display = '';
+    if (state.panelOpen) bottomPanel.style.display = '';
+    q('.statusbar').style.display = '';
+  }
+  notify('info', zenMode ? '🧘 Zen Mode' : '', zenMode ? 'Press Escape or click ● to exit' : 'Zen mode exited');
+}
+
+// ── SPLIT EDITOR ─────────────────────────────────
+function splitEditor() { notify('info','','Split editor: feature preview — clone the tab in a new pane'); }
+
+// ── CHANGE LANGUAGE ───────────────────────────────
+function changeLang() {
+  const langs = Object.keys(syntaxDefs);
+  const cur = state.activeFile ? FS.files[state.activeFile]?.lang : 'JavaScript';
+  const idx = langs.indexOf(cur);
+  const next = langs[(idx + 1) % langs.length];
+  if (state.activeFile) FS.files[state.activeFile].lang = next;
+  $('sb-lang').textContent = next;
+  notify('info','Language', `Changed to ${next}`);
+}
+
+// ── SHOW WELCOME ─────────────────────────────────
+function showWelcome() {
+  if (state.activeFile) {
+    if (state.activeFile && codeEditor.style.display !== 'none') {
+      FS.files[state.activeFile].content = codeEditor.value;
+    }
+    state.activeFile = null;
+    splash.style.display = '';
+    gutter.style.display = 'none';
+    codeWrap.style.display = 'none';
+    minimap.style.display = 'none';
+    breadcrumb.innerHTML = '';
+  }
+}
+
+// ── FILE OPERATIONS ───────────────────────────────
+let ctxFile = null;
+
+function showTreeCtx(e) {
+  e.preventDefault();
+  showCtx(e, $('treeCtx'));
+}
+
+function renameFile() {
+  if (!state.ctxFile && !state.activeFile) return;
+  const fname = state.ctxFile || state.activeFile;
+  const newName = prompt('Rename to:', fname.split('/').pop());
+  if (!newName || newName === fname.split('/').pop()) return;
+  const folder = fname.includes('/') ? fname.slice(0, fname.lastIndexOf('/') + 1) : '';
+  const newFull = folder + newName;
+  FS.files[newFull] = { ...FS.files[fname] };
+  delete FS.files[fname];
+  const ti = state.openTabs.indexOf(fname);
+  if (ti >= 0) state.openTabs[ti] = newFull;
+  if (state.activeFile === fname) { state.activeFile = newFull; }
+  buildTree();
+  renderTabs();
+  notify('info','','Renamed to ' + newName);
+}
+
+function deleteFile() {
+  const fname = state.ctxFile || state.activeFile;
+  if (!fname) return;
+  if (!confirm(`Delete '${fname}'?`)) return;
+  delete FS.files[fname];
+  const ti = state.openTabs.indexOf(fname);
+  if (ti >= 0) { state.openTabs.splice(ti, 1); }
+  if (state.activeFile === fname) {
+    const next = state.openTabs[0] || null;
+    if (next) openFileByName(next);
+    else showWelcome();
+  }
+  buildTree();
+  renderTabs();
+  notify('warn','','Deleted: ' + fname);
+}
+
+function copyPath() {
+  const f = state.ctxFile || state.activeFile;
+  if (f) { navigator.clipboard.writeText('/home/montoo/my-project/' + f).then(() => notify('info','','Path copied')); }
+}
+
+function revealInFinder() { notify('info','','Reveal in Explorer (simulated)'); }
+
+// ── CONTEXT MENUS ────────────────────────────────
+function showCtx(e, menu) {
+  e.preventDefault();
+  closeAllCtx();
+  menu.style.left = Math.min(e.clientX, window.innerWidth - 220) + 'px';
+  menu.style.top  = Math.min(e.clientY, window.innerHeight - 200) + 'px';
+  menu.classList.add('show');
+}
+
+function closeAllCtx() { qa('.ctx').forEach(c => c.classList.remove('show')); }
+document.addEventListener('click', closeAllCtx);
+codeEditor.addEventListener('contextmenu', e => { e.preventDefault(); showCtx(e, $('edCtx')); });
+
+// ── DROPDOWN MENUS ────────────────────────────────
+function initMenus() {
+  qa('.tmenu').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const menu = btn.dataset.menu;
+      const ddId = 'dd-' + menu;
+      const dd = $(ddId);
+      if (!dd) return;
+      const isOpen = dd.classList.contains('show');
+      closeAllDd();
+      if (!isOpen) {
+        const rect = btn.getBoundingClientRect();
+        dd.style.left = rect.left + 'px';
+        dd.style.top  = rect.bottom + 'px';
+        dd.classList.add('show');
+        btn.classList.add('open');
+      }
+    });
+    btn.addEventListener('mouseenter', () => {
+      const anyOpen = qa('.dropdown.show').length > 0;
+      if (anyOpen) {
+        closeAllDd();
+        const rect = btn.getBoundingClientRect();
+        const dd = $('dd-' + btn.dataset.menu);
+        if (dd) {
+          dd.style.left = rect.left + 'px';
+          dd.style.top  = rect.bottom + 'px';
+          dd.classList.add('show');
+          btn.classList.add('open');
+        }
+      }
+    });
+  });
+}
+
+function closeAllDd() {
+  qa('.dropdown').forEach(d => d.classList.remove('show'));
+  qa('.tmenu').forEach(t => t.classList.remove('open'));
+}
+document.addEventListener('click', closeAllDd);
+
+// ── OVERLAYS ─────────────────────────────────────
+function showOverlay() { $('overlay').classList.add('show'); }
+function closeAllOverlays() {
+  $('overlay').classList.remove('show');
+  $('palette').classList.remove('show');
+  $('gotoWidget').classList.remove('show');
+  $('shortcutsPanel').classList.remove('show');
+  $('paletteInput').placeholder = 'Type a command...';
+  $('paletteInput').oninput = (e) => filterPalette(e.target.value);
+  codeEditor.focus();
+}
+
+// ── NOTIFICATIONS ─────────────────────────────────
+function notify(type, title, msg, dur) {
+  const stack = $('notifStack');
+  const icons = { info:'ℹ', success:'✓', warn:'⚠', error:'⊗' };
+  const colors = { info:'#007acc', success:'#89d185', warn:'#cca700', error:'#f48771' };
+  const div = document.createElement('div');
+  div.className = 'notif';
+  div.innerHTML = `
+    <span class="notif-icon" style="color:${colors[type]||'#007acc'}">${icons[type]||'ℹ'}</span>
+    <div class="notif-body">
+      ${title ? `<div class="notif-title">${title}</div>` : ''}
+      <div class="notif-msg">${msg}</div>
+    </div>
+    <span class="notif-close" onclick="this.closest('.notif').remove()">✕</span>`;
+  stack.appendChild(div);
+  setTimeout(() => { div.style.opacity='0'; div.style.transition='opacity .3s'; setTimeout(() => div.remove(), 300); }, dur || 3500);
+}
+
+// ── COPILOT ───────────────────────────────────────
+function toggleCopilot() {
+  state.copilotOpen = !state.copilotOpen;
+  $('copilotPanel').classList.toggle('show', state.copilotOpen);
+}
+
+const copilotResponses = {
+  'explain': "I'll explain the selected code:\n\nThis function creates a new Editor instance with the provided configuration. It accepts an options object with name, version, author, and theme properties, falling back to sensible defaults.\n\nThe `init()` method sets up the DOM container and attaches event listeners.",
+  'fix': "I found a potential issue:\n\n```js\n// Consider adding error handling:\ntry {\n  await editor.init();\n} catch (err) {\n  console.error('Editor failed to init:', err);\n}\n```",
+  'test': "Here's a test for this function:\n\n```js\ndescribe('Editor', () => {\n  it('should initialize with defaults', () => {\n    const editor = new Editor({});\n    expect(editor.theme).toBe('dark');\n    expect(editor.name).toBe('CEWCMM');\n  });\n});\n```",
+  'refactor': "Here's a refactored version:\n\n```js\nconst createEditor = (config = {}) => ({\n  name:    config.name    ?? 'CEWCMM',\n  version: config.version ?? '1.0.0',\n  author:  config.author  ?? 'MONTOO',\n  theme:   config.theme   ?? 'dark',\n});\n```",
+};
+
+function cpKeyDown(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); cpSend(); }
+}
+
+function cpSend() {
+  const msg = $('cpInput').value.trim();
+  if (!msg) return;
+  $('cpInput').value = '';
+  $('cpInput').style.height = '';
+  appendCpMsg('user', msg);
+
+  // Typing indicator
+  const typing = document.createElement('div');
+  typing.className = 'cp-msg cp-typing';
+  typing.innerHTML = `<div class="cp-dot"></div><div class="cp-dot"></div><div class="cp-dot"></div>`;
+  $('cpMessages').appendChild(typing);
+  $('cpMessages').scrollTop = 9999;
+
+  setTimeout(() => {
+    typing.remove();
+    const lower = msg.toLowerCase();
+    let response;
+    if (lower.includes('explain')) response = copilotResponses.explain;
+    else if (lower.includes('fix') || lower.includes('bug') || lower.includes('error')) response = copilotResponses.fix;
+    else if (lower.includes('test')) response = copilotResponses.test;
+    else if (lower.includes('refactor') || lower.includes('improve') || lower.includes('clean')) response = copilotResponses.refactor;
+    else if (lower.includes('hello') || lower.includes('hi')) response = 'Hello! I\'m CEWCMM Copilot. How can I help you code today?';
+    else if (lower.includes('function') || lower.includes('create') || lower.includes('write')) {
+      response = `Here's a template for what you're asking:\n\n\`\`\`js\nconst ${msg.match(/\w+/)?.[0] || 'myFunction'} = async (params) => {\n  try {\n    // TODO: implement logic\n    return result;\n  } catch (err) {\n    console.error(err);\n    throw err;\n  }\n};\n\`\`\``;
+    }
+    else response = `I can help with:\n\n• **Explain** — "Explain this function"\n• **Fix** — "Fix the bug"\n• **Test** — "Write tests for this"\n• **Refactor** — "Refactor this code"\n\nOr just describe what you want to build!`;
+    appendCpMsg('bot', response);
+  }, 800 + Math.random() * 600);
+}
+
+function appendCpMsg(role, text) {
+  const div = document.createElement('div');
+  div.className = 'cp-msg';
+  if (role === 'user') div.innerHTML = `<div class="cp-msg-user">${escHtml(text)}</div>`;
+  else div.innerHTML = `<div class="cp-msg-bot">${text.replace(/```(\w*)\n?([\s\S]*?)```/g, (_,l,c) => `<pre style="background:rgba(255,255,255,0.06);border-radius:4px;padding:8px;margin:6px 0;overflow-x:auto;font-family:Consolas,monospace;font-size:12px;">${escHtml(c)}</pre>`).replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>').replace(/\n/g,'<br>')}</div>`;
+  $('cpMessages').appendChild(div);
+  $('cpMessages').scrollTop = 9999;
+}
+
+// ── GO BACK/FORWARD ───────────────────────────────
+function goBack() { notify('info','','Navigation: go back (Alt+←)'); }
+function goForward() { notify('info','','Navigation: go forward (Alt+→)'); }
+
+// ── HELPERS ───────────────────────────────────────
+function timeStr() { return new Date().toLocaleTimeString(); }
+
+// ── GLOBAL KEYBOARD ───────────────────────────────
+document.addEventListener('keydown', (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'P') { e.preventDefault(); showPalette(); }
+  if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key === 'p') { e.preventDefault(); quickOpen(); }
+  if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'F') { e.preventDefault(); findInFiles(); }
+  if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'G') { e.preventDefault(); switchActivity('git', q('[data-panel="git"]')); }
+  if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'D') { e.preventDefault(); switchActivity('run', q('[data-panel="run"]')); }
+  if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'X') { e.preventDefault(); switchActivity('ext', q('[data-panel="ext"]')); }
+  if (e.key === 'Escape') {
+    if (acEl) { acEl.remove(); acEl = null; return; }
+    closeFind();
+    closeAllOverlays();
+    closeAllDd();
+  }
+  if (e.key === 'F3') { e.preventDefault(); e.shiftKey ? findPrev() : findNext(); }
+});
+
+// ── INIT ─────────────────────────────────────────
+function init() {
+  initMenus();
+  buildTree();
+  renderExtensions(extensions);
+  initTerminal();
+  renderProblems();
+
+  // Recent files
+  const recent = $('recentList');
+  Object.keys(FS.files).slice(0,5).forEach(f => {
+    const div = document.createElement('div');
+    div.className = 'recent-item';
+    div.innerHTML = `${FS.files[f].icon} ${f}`;
+    div.onclick = () => openFileByName(f);
+    recent.appendChild(div);
+  });
+
+  // Open default file
+  setTimeout(() => {
+    openFileByName('index.js');
+    notify('success','CEWCMM','Editor ready — by MONTOO');
+  }, 300);
+
+  // Auto-save every 30s
+  setInterval(() => {
+    if (state.activeFile && codeEditor.style.display !== 'none') {
+      FS.files[state.activeFile].content = codeEditor.value;
+    }
+  }, 30000);
+}
+
+init();
+</script>
+</body>
+</html>
